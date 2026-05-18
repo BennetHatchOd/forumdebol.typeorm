@@ -1,0 +1,56 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "build",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "build",
+			"detail": "nest build"
+		},
+		{
+			"type": "npm",
+			"script": "format",
+			"problemMatcher": [],
+			"label": "format",
+			"detail": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+		},
+		{
+			"type": "npm",
+			"script": "lint",
+			"problemMatcher": [],
+			"label": "lint",
+			"detail": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
+		},
+		{
+			"type": "npm",
+			"script": "start",
+			"problemMatcher": [],
+			"label": "start",
+			"detail": "nest start"
+		},
+		{
+			"type": "npm",
+			"script": "start:debug",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "start:debug",
+			"detail": "nest start --debug --watch"
+		},
+		{
+			"type": "npm",
+			"script": "start:dev",
+			"problemMatcher": [],
+			"label": "start:dev",
+			"detail": "nest start --watch"
+		},
+		{
+			"type": "npm",
+			"script": "start:prod",
+			"problemMatcher": [],
+			"label": "start:prod",
+			"detail": "node dist/main"
+		}
+	]
+}

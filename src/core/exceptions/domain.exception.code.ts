@@ -1,0 +1,15 @@
+export enum DomainExceptionCode {
+    NotFound = 1,
+    BadRequest = 3,
+    InternalServerError = 6,
+    TooManyEntiriesInDB = 7,
+    Forbidden = 9,
+    ValidationError = 12,
+    Unauthorized = 15,
+    EmailNotConfirmed = 18,
+    EmailNotExist = 21,
+    RefreshTokenNotVerify = 22,
+    ConfirmationCodeExpired = 24,
+    PasswordRecoveryCodeExpired = 27,
+    PasswordRecoveryCodeNotFound = 30,
+}
