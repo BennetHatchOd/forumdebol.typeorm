@@ -8,19 +8,24 @@ import { TestingModule } from '@modules/testing/testing.module';
 import { NotificationsModule } from '@modules/notifications/notifications.module';
 import { CoreModule } from '@core/core.module';
 import { CoreConfig } from '@core/core.config';
-import { DatabaseModule } from '@core/database.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
+import { DatabaseConfig } from '@core/db.config';
 
 @Module({
     imports: [
         configModule,
-        DatabaseModule,
+        TypeOrmModule.forRootAsync({
+            inject: [ConfigService],
+            useFactory: (configService: ConfigService<DatabaseConfig>) =>
+                configService.get('database', { infer: true })!,
+        }),
         BloggingPlatformModule,
         UserSystemModule,
-        TestingModule,
         CoreModule,
         NotificationsModule,
     ],
-    controllers: [AppController, ],
+    controllers: [AppController],
     providers: [AppService],
 })
 

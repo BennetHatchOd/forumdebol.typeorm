@@ -21,14 +21,12 @@ import { SessionRepository } from '@modules/users-system/infrastucture/session.r
 import { SessionQueryRepository } from '@modules/users-system/infrastucture/query/session.query.repository';
 import { DeviceController } from '@modules/users-system/api/device.controller';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { DatabaseModule } from '@core/database.module';
 import { ThrottlerOptions } from '@nestjs/throttler/dist/throttler-module-options.interface';
 
 @Module({
     imports: [
         CqrsModule,
         AuthModule,
-        DatabaseModule,
         ThrottlerModule.forRootAsync({
             imports:[UserSystemModule],
             inject: [UserConfig],

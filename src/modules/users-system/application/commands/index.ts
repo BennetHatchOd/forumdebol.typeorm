@@ -9,7 +9,7 @@ import {
     CreateCodeConfirmationEmailHandler
 } from '@modules/users-system/application/commands/create.code.confirmation.email.usecase';
 import { DeleteUserHandler } from '@modules/users-system/application/commands/delete.user.usecase';
-import { ResetPasswordHandler } from '@modules/users-system/application/commands/reset.password.usecase';
+import { AskNewPasswordHandler } from '@modules/users-system/application/commands/ask.new.password.usecase';
 
 export const CommandHandlers = [
     CreateUserHandler,
@@ -21,5 +21,5 @@ export const CommandHandlers = [
     DeleteOneSessionHandler,
     DeleteMySessionHandler,
     DeleteOthersSessionHandler,
-    ResetPasswordHandler,
+    AskNewPasswordHandler,
 ];

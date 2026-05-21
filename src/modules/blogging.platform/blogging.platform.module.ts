@@ -12,7 +12,6 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { LikeRepository } from '@modules/blogging.platform/infrastucture/like.repository';
 import { AuthModule } from '@core/auth.module';
 import { ReadUserIdGuard } from '@core/guards/read.userid';
-import { DatabaseModule } from '@core/database.module';
 import { BlogController } from '@modules/blogging.platform/api/blog.controller';
 import { QueryHandlers } from '@modules/blogging.platform/application/queries';
 import { CommandHandlers } from '@modules/blogging.platform/application/commands';
@@ -21,7 +20,6 @@ import { CommandHandlers } from '@modules/blogging.platform/application/commands
     imports: [
         CqrsModule,
         AuthModule,
-        DatabaseModule,
     ],
     controllers: [
         BlogAdminController,

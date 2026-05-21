@@ -1,5 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
-import {join} from "path"
+import {join} from "path";
+import databaseConf from '../core/db.config';
 
 export const configModule = ConfigModule.forRoot({
 
@@ -10,4 +11,5 @@ export const configModule = ConfigModule.forRoot({
         join(__dirname, '..', 'env', '.env.production'),
     ],
     isGlobal: true,
+    load: [databaseConf],
 })

@@ -20,6 +20,38 @@ export class CoreConfig {
 
     @IsNotEmpty()
     @IsString({
+        message: 'Set Env variable DATABASE_USER',
+    })
+    dbUser: string;
+    
+    @IsNotEmpty()
+    @IsString({
+        message: 'Set Env variable DATABASE_PASS',
+    })
+    dbPass: string;
+    
+    @IsNotEmpty()
+    @IsString({
+        message: 'Set Env variable DATABASE_HOST',
+    })
+    dbHost: string;
+    
+    @IsNotEmpty()
+    @IsString({
+        message: 'Set Env variable DATABASE_PORT',
+    })
+    dbPort: number;
+    
+    @IsNotEmpty()
+    @IsString({
+        message: 'Set Env variable DATABASE_NAME',
+    })
+    dbName: string;
+    
+    database: string;
+    
+    @IsNotEmpty()
+    @IsString({
         message: 'Set Env variable PASSWORD_MAIL',
     })
     passwordEmail: string;
@@ -54,6 +86,11 @@ export class CoreConfig {
         this.versionApp = this.configService.get('VERSION_APP');
         this.isSwaggerEnabled = configValidationUtility.convertToBoolean(this.configService.get('IS_SWAGGER_ENABLE')) as boolean;
         this.passwordEmail = this.configService.get('PASSWORD_MAIL');
+        this.dbUser = this.configService.get('DATABASE_USER');
+        this.dbPass = this.configService.get('DATABASE_PASS');
+        this.dbHost = this.configService.get('DATABASE_HOST');
+        this.dbPort = this.configService.get('DATABASE_PORT');
+        this.dbName = this.configService.get('DATABASE_NAME');
 
         configValidationUtility.validateConfig(this);
     }
