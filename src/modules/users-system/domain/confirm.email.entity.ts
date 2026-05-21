@@ -1,4 +1,6 @@
-import { CreateCodeDto } from '@modules/users-system/dto/create/create.code.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { add } from 'date-fns';
+import { CodeBaseDBEntity } from '@core/entity/code.base.entity';
 
 export class ConfirmEmail {
     id: number;
@@ -6,13 +8,12 @@ export class ConfirmEmail {
     expirationTime: Date;
     userId: number;
 
+    static createInstance(userId: number, timeLifeCode: number): ConfirmEmail {
+        const confirmEmail = new this();
+        confirmEmail.userId = userId;
+        confirmEmail.code = uuidv4();
+        confirmEmail.expirationTime = add(new Date(), { hours: timeLifeCode});
 
-    static createInstance(dto: CreateCodeDto): ConfirmEmail {
-        const codeTuple = new this();
-        codeTuple.code = dto.code;
-        codeTuple.expirationTime = dto.expirationTime;
-        codeTuple.userId = dto.userId;
-
-        return codeTuple;
+        return confirmEmail;
     }
 }

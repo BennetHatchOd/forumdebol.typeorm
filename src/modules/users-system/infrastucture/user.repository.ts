@@ -2,9 +2,9 @@ import { User } from '../domain/user.entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { DATA_SOURCE } from '@core/constans/data.source';
 import { DataSource } from 'typeorm';
-import { CreateCodeDto } from '@modules/users-system/dto/create/create.code.dto';
 import { UserWithTime } from '@modules/users-system/dto/user.with.time';
 import { CodeTable } from '@modules/users-system/infrastucture/code.type';
+import { NewPassword } from '@modules/users-system/domain/new.password';
 
 @Injectable()
 export class UserRepository {
@@ -113,7 +113,7 @@ export class UserRepository {
         return ;
     }
 
-    async saveCode(createDto: CreateCodeDto, table: CodeTable): Promise<void>   {
+    async saveCode(createDto: NewPassword, table: CodeTable): Promise<void>   {
 
         await this.dataSource.query(`
             INSERT INTO public."${table}" 

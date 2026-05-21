@@ -1,21 +1,19 @@
 import { Command, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { add } from 'date-fns';
 import { UserRepository } from '@modules/users-system/infrastucture/user.repository';
-import { v4 as uuidv4 } from 'uuid';
-import { CreateCodeDto } from '@modules/users-system/dto/create/create.code.dto';
 import { UserConfig } from '@modules/users-system/config/user.config';
 import { EmailService } from '@modules/notifications/application/email.service';
 import { CodeTable } from '@modules/users-system/infrastucture/code.type';
+import { NewPassword } from '@modules/users-system/domain/new.password';
 
-export class ResetPasswordCommand extends Command<void> {
+export class AskNewPasswordCommand extends Command<void> {
     constructor(
         public email: string,
     ) {
         super()}
 }
 
-@CommandHandler(ResetPasswordCommand)
-export class ResetPasswordHandler implements ICommandHandler<ResetPasswordCommand> {
+@CommandHandler(AskNewPasswordCommand)
+export class AskNewPasswordHandler implements ICommandHandler<AskNewPasswordCommand> {
     constructor(
         private userRepository: UserRepository,
         private readonly userConfig: UserConfig,
@@ -23,7 +21,7 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
 
     ) {}
 
-    async execute({email }: ResetPasswordCommand):Promise<void> {
+    async execute({email }: AskNewPasswordCommand):Promise<void> {
 
         // Only for verified users!
         // Generates a new recovery code and sends it via email without deleting the previous ones.
@@ -36,11 +34,9 @@ export class ResetPasswordHandler implements ICommandHandler<ResetPasswordComman
         // Even if the current email address is not registered,
         // do not throw an error (to prevent detection of the user's email address)
 
-        const code = uuidv4();
-        const expirationTime = add(new Date(), {hours: this.userConfig.timeLifePasswordCode});
-        const resetPasswordDto = new CreateCodeDto(foundedUser, code, expirationTime);
-        await this.userRepository.saveCode(resetPasswordDto, CodeTable.RESET_PASSWORD);
-        this.mailService.createPasswordRecovery(email, code);
+        const newPassword = NewPassword.createInstance(foundedUser, this.userConfig.timeLifePasswordCode);
+        await this.userRepository.saveCode(newPassword, CodeTable.RESET_PASSWORD);
+        this.mailService.createPasswordRecovery(email, newPassword.code);
 
         return;
     }

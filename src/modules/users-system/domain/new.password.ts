@@ -6,7 +6,7 @@ export class NewPassword {
     code: string;
     expirationTime: Date;
 
-    static createInstance(userId: string, timeLifeCode: number): NewPassword {
+    static createInstance(userId: number, timeLifeCode: number): NewPassword {
         const newPassword = new this();
         newPassword.userId = userId;
         newPassword.code = uuidv4();
