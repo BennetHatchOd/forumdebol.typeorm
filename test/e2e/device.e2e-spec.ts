@@ -301,6 +301,7 @@ describe('DeviceController (e2e)', () => {
                 .get(URL_PATH.devices)
                 .set("Cookie", 'refreshToken=' + refreshTokens[1])
                 .expect(HttpStatus.OK);
+
             expect(session.body.length).toBe(1)
             expect(session.body[0]).toEqual({
                 ip: ips[1],

@@ -1,20 +1,19 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserViewDto } from '../../dto/view/user.view.dto';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
 import { GetUserQueryParams } from '../../dto/input/get.user.query.params.input.dto';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { EmptyPaginator } from '@core/dto/empty.paginator';
-import { DataSource } from 'typeorm';
-import { DATA_SOURCE } from '@core/constans/data.source';
+import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { User } from '@modules/users-system/domain/user.entity';
-
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UserQueryRepository {
 
     constructor(
-        @Inject(DATA_SOURCE)private readonly dataSource: DataSource,
+        @InjectRepository(User) private userORMRepo: Repository<User>,
     ){}
 
     async  findById(id: string): Promise<UserViewDto> {
@@ -27,78 +26,110 @@ export class UserQueryRepository {
                 code: DomainExceptionCode.NotFound,
             });
 
-        const user: User[] = await this.dataSource.query(`
-            SELECT * 
-                FROM public."Users" 
-                WHERE 
-                      id = $1 
-                  AND "deletedAt" IS NULL 
-                LIMIT 1;`,
-            [numericId]);
+        const user: User|null = await this.userORMRepo.findOne({where: {id: numericId}});
 
-        if(user.length == 0){
+        if(!user){
             throw new DomainException({
                 message: 'user not found',
                 code: DomainExceptionCode.NotFound});
         }
-        return UserViewDto.mapToView(user[0]);
+        return UserViewDto.mapToView(user);
     }
 
     async find(queryReq: GetUserQueryParams): Promise<PaginatedViewDto<UserViewDto>> {
+        const collateFields = new Set(['login', 'email']);
 
-        const whereClausesAND: string[] = [`"deletedAt" IS NULL`];
-        const whereClausesOR: string[] = [];
-        const queryParams: any[] = [];
+        const buildQuery = () => {
+            const qb = this.userORMRepo.createQueryBuilder('user');
 
-        // в queryParams хранятся параметры для подстановки в запрос например [dotPol],
-        // в whereSqlOR подставляется номер параметра например `login ILIKE $2'
+            if (queryReq.searchLoginTerm != null && queryReq.searchLoginTerm !== '') {
+                qb.andWhere('user.login ILIKE :login', {
+                    login: `%${queryReq.searchLoginTerm}%`,
+                });
+            }
 
-        if (queryReq.searchLoginTerm) {
-            queryParams.push(`%${queryReq.searchLoginTerm}%`);
-            whereClausesOR.push(`login ILIKE $${queryParams.length}`);
-        }
+            if (queryReq.searchEmailTerm != null && queryReq.searchEmailTerm !== '') {
+                qb.andWhere('user.email ILIKE :email', {
+                    email: `%${queryReq.searchEmailTerm}%`,
+                });
+            }
 
-        if (queryReq.searchEmailTerm) {
-            queryParams.push(`%${queryReq.searchEmailTerm}%`);
-            whereClausesOR.push(`email ILIKE $${queryParams.length}`);
-        }
+            const sortDirection = queryReq.sortDirection.toUpperCase() as 'ASC' | 'DESC';
 
+            if (collateFields.has(queryReq.sortBy)) {
+                qb.orderBy(`"${queryReq.sortBy}" COLLATE "C"`, sortDirection);
+            } else {
+                qb.orderBy(`"${queryReq.sortBy}"`, sortDirection);
+            }
 
-        if (whereClausesOR.length > 0) {
-            const whereSqlOR = whereClausesOR.join(' OR ');
-            whereClausesAND.push(`(${whereSqlOR})`);
-        }
+            return qb;
+        };
 
-        const whereSql = whereClausesAND.join(' AND ');
+        const totalCount = await buildQuery().getCount();
 
-        const orderBy =
-            queryReq.sortBy === 'login' || queryReq.sortBy === 'email'
-                ? `"${queryReq.sortBy}" COLLATE "C" ${queryReq.sortDirection}`
-                : `"${queryReq.sortBy}" ${queryReq.sortDirection}`;
-
-        const sqlRequest = `FROM public."Users" WHERE ${whereSql}`;
-        const sqlCount = `SELECT COUNT(*) AS count ${sqlRequest};`;
-        const totalCount: number = await this.dataSource.query(sqlCount + ';', queryParams);
-        queryReq.calculateSkip(+totalCount[0].count);
-
-        const sql = ` SELECT * ${sqlRequest}
-            ORDER BY ${orderBy} 
-            LIMIT ${queryReq.pageSize} OFFSET ${queryReq.skip};`;
-
-
-        if(+totalCount[0].count === 0)
+        if (totalCount === 0) {
             return new EmptyPaginator<UserViewDto>();
+        }
 
-        const users: User[] = await this.dataSource.query(sql, queryParams);
+        queryReq.calculateSkip(totalCount);
+
+        const users = await buildQuery()
+            .skip(queryReq.skip)
+            .take(queryReq.pageSize)
+            .getMany();
 
         const items = users.map(UserViewDto.mapToView);
 
         return PaginatedViewDto.mapToView({
-            items: items,
+            items,
             page: queryReq.pageNumber,
             size: queryReq.pageSize,
-            totalCount: +totalCount[0].count
-        })
-
+            totalCount,
+        });
     }
+
+
+
+    // async find(queryReq: GetUserQueryParams): Promise<PaginatedViewDto<UserViewDto>> {
+    //
+    //     const totalCount: number = await this.userORMRepo.count(this.buildFindOptions(queryReq));
+    //     if(totalCount === 0)
+    //         return new EmptyPaginator<UserViewDto>();
+    //
+    //     queryReq.calculateSkip(totalCount);
+    //
+    //     const users: User[] = await this.userORMRepo.find(this.buildFindOptions(queryReq));
+    //
+    //     const items = users.map(UserViewDto.mapToView);
+    //
+    //     return PaginatedViewDto.mapToView({
+    //         items: items,
+    //         page: queryReq.pageNumber,
+    //         size: queryReq.pageSize,
+    //         totalCount: totalCount
+    //     })
+    //
+    // }
+    // private buildFindOptions(dto: GetUserQueryParams): FindManyOptions<User> {
+    //     const options: FindManyOptions<User> = {};
+    //
+    //     const where: any = {};
+    //
+    //     if (dto.searchLoginTerm !== null )
+    //         where.login = ILike(`%${dto.searchLoginTerm}%`);
+    //
+    //     if (dto.searchEmailTerm !== null )
+    //         where.email = ILike(`%${dto.searchEmailTerm}%`);
+    //
+    //     if (Object.keys(where).length > 0)
+    //         options.where = where;
+    //
+    //     if (dto.maxPage > 0) {
+    //         options.order = { [dto.sortBy]: dto.sortDirection };
+    //
+    //         options.take = dto.pageSize;
+    //         options.skip = dto.skip;
+    //     }
+    //     return options;
+    // }
 }

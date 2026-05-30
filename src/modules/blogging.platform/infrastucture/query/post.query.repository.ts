@@ -41,8 +41,8 @@ export class PostQueryRepository {
                         counts.likes_count AS "likesCount",
                         counts.dislikes_count AS "dislikesCount",
                         me.my_status AS "myStatus"
-                    FROM public.posts p
-                    JOIN public.blogs b ON p."blogId" = b.id
+                    FROM public.post p
+                    JOIN public.blog b ON p."blogId" = b.id
                     LEFT JOIN LATERAL (
                         SELECT
                             COUNT(*) FILTER (WHERE l.status = 'Like')::int AS likes_count,
@@ -74,7 +74,7 @@ export class PostQueryRepository {
                   l."userId"::text AS "userId",
                   u.login AS "login"
               FROM public.like_post l
-              JOIN public."Users" u ON u.id = l."userId"
+              JOIN public.user u ON u.id = l."userId"
               WHERE l."targetId" = $1
                 AND l.status = 'Like'
               ORDER BY l."createdAt" DESC
@@ -118,8 +118,8 @@ export class PostQueryRepository {
 
         const sqlCount = `
             SELECT COUNT(*)::int AS count 
-            FROM public.posts p 
-            JOIN public.blogs b ON b.id = p."blogId" 
+            FROM public.post p 
+            JOIN public.blog b ON b.id = p."blogId" 
             WHERE ${whereSql};`;
 
         const totalCount: number =
@@ -136,8 +136,8 @@ export class PostQueryRepository {
                         counts.likes_count AS "likesCount",
                         counts.dislikes_count AS "dislikesCount",
                         me.my_status AS "myStatus"
-                    FROM public.posts p
-                    JOIN public.blogs b ON p."blogId" = b.id
+                    FROM public.post p
+                    JOIN public.blog b ON p."blogId" = b.id
                     LEFT JOIN LATERAL (
                         SELECT
                             COUNT(*) FILTER (WHERE l.status = 'Like')::int AS likes_count,
@@ -173,14 +173,14 @@ export class PostQueryRepository {
                                         ) FILTER (WHERE nl."userId" IS NOT NULL),
                                 '[]'::json
                         ) AS "newestLikes"
-                    FROM public.posts p
+                    FROM public.post p
                              LEFT JOIN LATERAL (
                         SELECT
                             l."createdAt",
                             l."userId"::text AS "userId",
                             u.login
                         FROM public.like_post l
-                                 JOIN public."Users" u ON u.id = l."userId"
+                                 JOIN public.user u ON u.id = l."userId"
                         WHERE l."targetId" = p.id
                           AND l.status = 'Like'
                         ORDER BY l."createdAt" DESC

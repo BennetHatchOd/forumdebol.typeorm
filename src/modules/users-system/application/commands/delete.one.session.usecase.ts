@@ -4,6 +4,7 @@ import { SessionRepository } from '@modules/users-system/infrastucture/session.r
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { SessionQueryFilterDto } from '@modules/users-system/dto/session.query.filter.dto';
+import { isUUID } from 'class-validator';
 
 export class DeleteOneSessionCommand extends Command<void> {
     constructor(
@@ -21,6 +22,11 @@ export class DeleteOneSessionHandler implements ICommandHandler<DeleteOneSession
 
     async execute({userId, deviceId}: DeleteOneSessionCommand):Promise<void> {
 
+        if(!isUUID(deviceId))
+            throw new DomainException({
+                message: 'session not found',
+                code: DomainExceptionCode.NotFound
+            })
         const findQueryFilter: SessionQueryFilterDto = { deviceId: deviceId }
 
         const sessionToClose: Session | null

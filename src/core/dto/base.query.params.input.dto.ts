@@ -13,14 +13,15 @@ class PaginationParams {
     pageSize: number = 10;
 
     public skip: number = 0;
+    public maxPage: number = 0;
 
     calculateSkip(totalPage: number): void {
 
-        let  maxPage: number = Math.floor(totalPage / this.pageSize);
+        this.maxPage = Math.floor(totalPage / this.pageSize);
         if (totalPage % this.pageSize > 0)
-            maxPage++;
-        if ( maxPage < this.pageNumber )
-            this.pageNumber = maxPage;
+            this.maxPage++;
+        if ( this.maxPage < this.pageNumber )
+            this.pageNumber = this.maxPage;
 
         this.skip = (this.pageNumber - 1) * this.pageSize;
     }

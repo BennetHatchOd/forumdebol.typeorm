@@ -18,7 +18,6 @@ export class DeviceController {
     constructor(
         private readonly commandBus: CommandBus,
         private readonly sessionQueryRepository: SessionQueryRepository,
-        private readonly sessionRepository: SessionRepository,
     ) {}
 
     @Get()

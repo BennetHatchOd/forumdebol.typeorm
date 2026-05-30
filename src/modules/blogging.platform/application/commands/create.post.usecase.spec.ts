@@ -1,4 +1,4 @@
-// import { Post } from '@modules/blogging.platform/domain/post.entity';
+// import { Post } from '@modules/blogging.platform/domain/post.domain';
 // import {
 //     CreatePostCommand,
 //     CreatePostHandler,

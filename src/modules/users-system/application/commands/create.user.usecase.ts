@@ -9,6 +9,7 @@ import { User } from '@modules/users-system/domain/user.entity';
 import {
     CreateCodeConfirmationEmailCommand
 } from '@modules/users-system/application/commands/create.code.confirmation.email.usecase';
+import { CodeTable } from '@modules/users-system/infrastucture/code.type';
 
 export class CreateUserCommand extends Command<string> {
     constructor(
@@ -55,13 +56,13 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, str
             userDto.password,
             this.userConfig.saltRound,
         );
-        const createdUser: User = User.createInstance({
+        const createdUser: User = User.create({
                 ...userDto,
                 password: passwordHash,
             },
             isConfirmedEmail);
 
-        await this.userRepository.saveUser(createdUser);
+        await this.userRepository.save(createdUser, CodeTable.USER);
 
         if(toSentEmail && !isConfirmedEmail)
             await this.commandBus.execute(new CreateCodeConfirmationEmailCommand(createdUser.email, createdUser.id))

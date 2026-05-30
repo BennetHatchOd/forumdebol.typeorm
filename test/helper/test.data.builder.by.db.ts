@@ -42,50 +42,50 @@ export class TestDataBuilderByDb {
                 public numberComments : number = 1,
     ) {}
 
-    async createManyBlogs() {
-        this.isCreate.blog = true;
+    // async createManyBlogs() {
+    //     this.isCreate.blog = true;
+    //
+    //     for (let i = 0; i < this.numberBlogs; i++) {
+    //         const blog = {
+    //             name: `Blog_${i}`,
+    //             description: `description for blog ${i}`,
+    //             websiteUrl:	`https://dff${i}.com`
+    //         }
+    //         const result:number = await this.dataSource.query(`
+    //             INSERT INTO public.blog(
+    //                 name, description, "websiteUrl")
+    //             VALUES('${blog.name}', '${blog.description}', '${blog.websiteUrl}')
+    //             RETURNING id;`)
+    //
+    //         const blogInstance: Blog = Blog.createInstance(blog);
+    //         blogInstance.id = result[0].id;
+    //         this.blogs.push(blogInstance);
+    //     }
+    // }
 
-        for (let i = 0; i < this.numberBlogs; i++) {
-            const blog = {
-                name: `Blog_${i}`,
-                description: `description for blog ${i}`,
-                websiteUrl:	`https://dff${i}.com`
-            }
-            const result:number = await this.dataSource.query(`
-                INSERT INTO public.blogs(
-                    name, description, "websiteUrl")
-                VALUES('${blog.name}', '${blog.description}', '${blog.websiteUrl}')
-                RETURNING id;`)
-
-            const blogInstance: Blog = Blog.createInstance(blog);
-            blogInstance.id = result[0].id;
-            this.blogs.push(blogInstance);
-        }
-    }
-
-    async createManyPosts(){
-        // create many posts for blog with id in this.blogIds[0]
-        this.isCreate.post = true;
-        await this.checkBlog();
-
-        for(let i = 0; i < this.numberPosts; i++){
-            const post ={
-                title: `post ${i}`,
-                shortDescription: `shortdescription for post ${i}`,
-                content: `content for post ${i}`,
-                blogId: this.blogs[0].id!.toString(),
-            };
-            const result = await this.dataSource.query(`
-                INSERT INTO public.posts(
-                    title, content, "shortDescription", "blogId")
-                VALUES('${post.title}', '${post.content}', '${post.shortDescription}', '${this.blogs[0].id!}')
-                RETURNING id;`);
-
-            const postInstance: Post = Post.createInstance(post);
-            postInstance.id = result[0].id;
-            this.posts.push(postInstance);
-        }
-    }
+    // async createManyPosts(){
+    //     // create many posts for blog with id in this.blogIds[0]
+    //     this.isCreate.post = true;
+    //     await this.checkBlog();
+    //
+    //     for(let i = 0; i < this.numberPosts; i++){
+    //         const post ={
+    //             title: `post ${i}`,
+    //             shortDescription: `shortdescription for post ${i}`,
+    //             content: `content for post ${i}`,
+    //             blogId: this.blogs[0].id!.toString(),
+    //         };
+    //         const result = await this.dataSource.query(`
+    //             INSERT INTO public.post(
+    //                 title, content, "shortDescription", "blogId")
+    //             VALUES('${post.title}', '${post.content}', '${post.shortDescription}', '${this.blogs[0].id!}')
+    //             RETURNING id;`);
+    //
+    //         const postInstance: Post = Post.createInstance(post);
+    //         postInstance.id = result[0].id;
+    //         this.posts.push(postInstance);
+    //     }
+    // }
 
     async createManyUsers(){
         this.isCreate.user = true;
@@ -100,10 +100,10 @@ export class TestDataBuilderByDb {
                 user.password,
                 this.userConfig.saltRound,
             );
-            const newUser: User = User.createInstance(user, true);
+            const newUser: User = User.create(user, true);
 
             const result = await this.dataSource.query(`
-                INSERT INTO public."Users"(
+                INSERT INTO public.user(
                     login, email, "passwordHash")
                 VALUES('${user.login}', '${user.email}', '${user.password}')
                 RETURNING id;`)
@@ -132,29 +132,29 @@ export class TestDataBuilderByDb {
         }
     }
 
-    async createManyComment(){
-        this.isCreate.comment = true;
-        await this.checkPost()
-        await this.checkUser();
-
-        for(let i =0; i < this.numberComments; i++){
-            const comment: CreateCommentDto =
-                {content: `This is the comment number ${i}`,
-                 postId: this.posts[0].id!.toString(),
-                 userId: this.users[0].id!.toString(),
-                 };
-
-            const result = await this.dataSource.query(`
-                INSERT INTO public.comments(
-                    content, "postId", "userId")
-                VALUES('${comment.content}', '${comment.postId}', '${comment.userId}')
-                RETURNING id;`);
-
-            const commentInstance: Comment = Comment.createInstance(comment);
-            commentInstance.id = result[0].id;
-            this.comments.push(commentInstance);
-        }
-   }
+   //  async createManyComment(){
+   //      this.isCreate.comment = true;
+   //      await this.checkPost()
+   //      await this.checkUser();
+   //
+   //      for(let i =0; i < this.numberComments; i++){
+   //          const comment: CreateCommentDto =
+   //              {content: `This is the comment number ${i}`,
+   //               postId: this.posts[0].id!.toString(),
+   //               userId: this.users[0].id!.toString(),
+   //               };
+   //
+   //          const result = await this.dataSource.query(`
+   //              INSERT INTO public.comments(
+   //                  content, "postId", "userId")
+   //              VALUES('${comment.content}', '${comment.postId}', '${comment.userId}')
+   //              RETURNING id;`);
+   //
+   //          const commentInstance: Comment = Comment.createInstance(comment);
+   //          commentInstance.id = result[0].id;
+   //          this.comments.push(commentInstance);
+   //      }
+   // }
 
     async writeToDB<T extends object>(
         entities: T[],
@@ -199,19 +199,19 @@ export class TestDataBuilderByDb {
         return value.toString();
     }
 
-    private async checkBlog(){
-        if (!this.isCreate.blog) {
-            await this.createManyBlogs();
-            this.isCreate.blog = true;
-        }
-    }
+    // private async checkBlog(){
+    //     if (!this.isCreate.blog) {
+    //         await this.createManyBlogs();
+    //         this.isCreate.blog = true;
+    //     }
+    // }
 
-    private async checkPost(){
-        if(!this.isCreate.post){
-            await this.createManyPosts();
-            this.isCreate.post = true;
-        }
-    }
+    // private async checkPost(){
+    //     if(!this.isCreate.post){
+    //         await this.createManyPosts();
+    //         this.isCreate.post = true;
+    //     }
+    // }
 
     private async checkUser(){
         if(!this.isCreate.user) {

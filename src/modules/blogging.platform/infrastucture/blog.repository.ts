@@ -14,7 +14,7 @@ export class BlogRepository {
 
         const searchItem: Blog[] = await this.dataSource.query(`
             SELECT * 
-            FROM public.blogs
+            FROM public.blog
             WHERE id = $1 AND "deletedAt" IS NULL
             LIMIT 1`,
             [numericId]
@@ -34,7 +34,7 @@ export class BlogRepository {
         const result = await this.dataSource.query(
             `SELECT EXISTS(
                 SELECT 1 
-                FROM public.blogs 
+                FROM public.blog 
                 WHERE id = $1 AND "deletedAt" IS NULL)`,
             [id],
         );
@@ -46,7 +46,7 @@ export class BlogRepository {
 
         if(!savedItem.id){
             const result = await this.dataSource.query(`
-                INSERT INTO public.blogs(
+                INSERT INTO public.blog(
                     name, description, "websiteUrl", "isMembership", "deletedAt")
                 VALUES($1, $2, $3, $4, $5)
                 RETURNING id, "createdAt";`,
@@ -61,7 +61,7 @@ export class BlogRepository {
             return
         }
 
-        await this.dataSource.query(`UPDATE public.blogs
+        await this.dataSource.query(`UPDATE public.blog
         SET 
         name = $1, 
         description = $2, 

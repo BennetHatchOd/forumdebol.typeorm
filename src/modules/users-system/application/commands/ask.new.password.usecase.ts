@@ -3,7 +3,7 @@ import { UserRepository } from '@modules/users-system/infrastucture/user.reposit
 import { UserConfig } from '@modules/users-system/config/user.config';
 import { EmailService } from '@modules/notifications/application/email.service';
 import { CodeTable } from '@modules/users-system/infrastucture/code.type';
-import { NewPassword } from '@modules/users-system/domain/new.password';
+import { NewPassword } from '@modules/users-system/domain/new.password.entity';
 
 export class AskNewPasswordCommand extends Command<void> {
     constructor(
@@ -34,8 +34,8 @@ export class AskNewPasswordHandler implements ICommandHandler<AskNewPasswordComm
         // Even if the current email address is not registered,
         // do not throw an error (to prevent detection of the user's email address)
 
-        const newPassword = NewPassword.createInstance(foundedUser, this.userConfig.timeLifePasswordCode);
-        await this.userRepository.saveCode(newPassword, CodeTable.RESET_PASSWORD);
+        const newPassword = NewPassword.create(foundedUser, this.userConfig.timeLifePasswordCode);
+        await this.userRepository.save(newPassword, CodeTable.RESET_PASSWORD);
         this.mailService.createPasswordRecovery(email, newPassword.code);
 
         return;

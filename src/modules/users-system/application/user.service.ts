@@ -9,8 +9,9 @@ import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { NewPasswordInputDto } from '@src/modules/users-system/dto/input/new.password.input.dto';
 import { UserRepository } from '@modules/users-system/infrastucture/user.repository';
-import { UserWithTime } from '@modules/users-system/dto/user.with.time';
+import { AuthCodeContext } from '@modules/users-system/dto/auth.code.context';
 import { CodeTable } from '@modules/users-system/infrastucture/code.type';
+import { User } from '@modules/users-system/domain/user.entity';
 
 @Injectable()
 export class UserService {
@@ -35,17 +36,17 @@ export class UserService {
         // проверяет по полям логин И емайл пользователя, если он найден,
         // проверяет совпадение хеша пароля и
         // возвращает ид найденного пользователя
-        const foundUser: { id: string; passHash: string } | null =
-            await this.userRepository.getPartUserByLoginEmail(loginOrEmail);
+        const foundUser: User | null =
+            await this.userRepository.getUserByLoginEmail(loginOrEmail);
 
         if (
             foundUser !== null &&
             (await this.passwordHashService.checkHash(
                 passHash,
-                foundUser.passHash,
+                foundUser.passwordHash,
             ))
         )
-            return foundUser.id;
+            return foundUser.id.toString();
 
         return null;
     }
@@ -66,7 +67,7 @@ export class UserService {
     async setNewPassword(recoveryPassword: NewPasswordInputDto): Promise<void> {
         // Sets a new password if a valid recovery code was received
 
-        const userNewPassword: UserWithTime|null =
+        const userNewPassword: AuthCodeContext|null =
             await this.userRepository.findAndDeleteAuthCode(recoveryPassword.recoveryCode,
                                                             CodeTable.RESET_PASSWORD);
 
@@ -82,9 +83,9 @@ export class UserService {
             recoveryPassword.newPassword,
             this.userConfig.saltRound,
         );
-        userNewPassword.passwordHash = hash;
-        const user = UserWithTime.mapToUser(userNewPassword)
-        await this.userRepository.saveUser(user);
+        const user = userNewPassword.user;
+        user.passwordHash = hash;
+        await this.userRepository.save(user, CodeTable.USER);
 
         return;
     }

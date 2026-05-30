@@ -22,11 +22,17 @@ import { SessionQueryRepository } from '@modules/users-system/infrastucture/quer
 import { DeviceController } from '@modules/users-system/api/device.controller';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerOptions } from '@nestjs/throttler/dist/throttler-module-options.interface';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '@modules/users-system/domain/user.entity';
+import { NewPassword } from '@modules/users-system/domain/new.password.entity';
+import { Session } from '@modules/users-system/domain/session.entity';
+import { ConfirmEmail } from '@modules/users-system/domain/confirm.email.entity';
 
 @Module({
     imports: [
         CqrsModule,
         AuthModule,
+        TypeOrmModule.forFeature([User, NewPassword, Session, ConfirmEmail]),
         ThrottlerModule.forRootAsync({
             imports:[UserSystemModule],
             inject: [UserConfig],

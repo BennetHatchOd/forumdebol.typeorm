@@ -25,7 +25,7 @@ export class BlogQueryRepository {
 
         const blog: Blog[] = await this.dataSource.query(`
             SELECT * 
-                FROM public.blogs 
+                FROM public.blog 
                 WHERE 
                       id = $1 
                   AND "deletedAt" IS NULL 
@@ -56,7 +56,7 @@ export class BlogQueryRepository {
                 ? `"${queryReq.sortBy}" COLLATE "C" ${queryReq.sortDirection}`
                 : `"${queryReq.sortBy}" ${queryReq.sortDirection}`;
 
-        const sqlRequest = `FROM public.blogs WHERE ${whereSql}`;
+        const sqlRequest = `FROM public.blog WHERE ${whereSql}`;
         const sqlCount = `SELECT COUNT(*) AS count ${sqlRequest};`;
         const totalCount: number = await this.dataSource.query(sqlCount + ';', queryParams);
         queryReq.calculateSkip(+totalCount[0].count);

@@ -54,7 +54,7 @@ export class AuthController {
         const accessTokens: string = await this.userService.createAccessToken(user)
         res.cookie('refreshToken', refreshToken,
             {httpOnly: true,
-                secure: true,})
+            secure: true,})
         return {
             accessToken: accessTokens};
     }

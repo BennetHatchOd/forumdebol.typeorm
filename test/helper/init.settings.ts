@@ -48,7 +48,7 @@ export const initSettings = async (
     await deleteAllData(app, coreConfig.globalPrefix);
 
     const passwordHashService = app.get<PasswordHashService>(PasswordHashService);
-    const dataSource = app.get<DataSource>(DATA_SOURCE);
+    const dataSource = app.get<DataSource>(DataSource);
     const testData = await TestDataBuilderByDb.createTestData(app,
                                                                         userConfig,
                                                                         dataSource,

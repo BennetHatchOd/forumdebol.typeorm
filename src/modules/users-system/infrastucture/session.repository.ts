@@ -1,114 +1,84 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Session } from '@modules/users-system/domain/session.entity';
 import { getTime } from 'date-fns';
 import { TokenPayloadDto } from '@modules/users-system/dto/token.payload.dto';
-import { DATA_SOURCE } from '@core/constans/data.source';
-import { DataSource } from 'typeorm';
+import { FindOneOptions, Not, Repository } from 'typeorm';
 import { SessionQueryFilterDto } from '@modules/users-system/dto/session.query.filter.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import console from 'node:console';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class SessionRepository {
 
     constructor(
-        @Inject(DATA_SOURCE) private dataSource: DataSource)
-    {}
+        @InjectRepository(Session) private sessionORMRepo: Repository<Session>,
+    ){}
 
     async isActive(session: TokenPayloadDto): Promise<boolean> {
         //  check if the session is valid
 
-        const result = await this.dataSource.query(`
-            SELECT EXISTS(
-                SELECT 1 
-                FROM public."Session" 
-                WHERE "userId" = $1 AND version = $2 AND "deviceId" = $3)`,
-            [+session.userId, session.version, session.deviceId],
-        );
+            const result = await this.sessionORMRepo.exists({
+                where: {
+                    user: { id: +session.userId },
+                    version: session.version,
+                    "deviceId": session.deviceId,
+                },
+            });
+            return result;
 
-        return result[0].exists;
     }
-
 
     async getByFilter(queryFilter: SessionQueryFilterDto): Promise<Session | null> {
 
-        let sqlQuery: string = '"deviceId" ';
-        let sqlParams: string[] = [];
-        sqlQuery += !queryFilter.notDeviceId
-                    ? '= $1'
-                    : '<> $1';
-        sqlParams.push(queryFilter.deviceId!);
+        const result
+            = await this.sessionORMRepo.findOne(this.buildFindOptions(queryFilter));
 
-        if (queryFilter.version) {
-            sqlQuery += ' AND version = $2 AND "userId" = $3';
-            sqlParams.push(queryFilter.version);
-            sqlParams.push(queryFilter.userId!);
-        }
-        const findAnswer: Session[]
-            = await this.dataSource.query(`
-                SELECT *
-                FROM public."Session"
-                WHERE ${sqlQuery}
-                LIMIT 1`,
-            sqlParams
-        );
-
-        if(findAnswer.length == 0)
-            return null;
-        return Session.copyInstance(findAnswer[0]);
+        return result;
     }
 
     async deleteByFilter(queryFilter: SessionQueryFilterDto): Promise<void> {
 
-        let sqlQuery: string = '"deviceId" ';
-        let sqlParams: string[] = [];
-        sqlQuery += !queryFilter.notDeviceId
-            ? '= $1'
-            : '<> $1';
-        sqlParams.push(queryFilter.deviceId!);
+        const result
+            = await this.sessionORMRepo.find(this.buildFindOptions(queryFilter));
 
-        if (queryFilter.userId) {
-            sqlQuery += ' AND "userId" = $2';
-            sqlParams.push(queryFilter.userId!);
-        }
-        const findAnswer: Session[]
-            = await this.dataSource.query(`
-                DELETE
-                FROM public."Session"
-                WHERE ${sqlQuery}`,
-            sqlParams
-        );
-
+        if (!result)
+            return;
+        await this.sessionORMRepo.remove(result);
     }
 
      async save(changedItem: Session): Promise<void> {
 
-        if(!changedItem.id){
-             const result = await this.dataSource.query(`
-                INSERT INTO public."Session"(
-                    "userId", version, "deviceId", "deviceName", "ip", "updatedAt")
-                VALUES($1, $2, $3, $4, $5, $6)
-                RETURNING id;`,
-                 [   changedItem.userId,
-                     changedItem.version,
-                     changedItem.deviceId,
-                     changedItem.deviceName,
-                     changedItem.ip,
-                     changedItem.updatedAt,
-                 ])
-             changedItem.id = result[0].id;
-             return
-         }
-
-        await this.dataSource.query(`UPDATE public."Session"
-            SET 
-            version = $1, 
-            "updatedAt" = $2
-            WHERE id = $3;`,
-             [   changedItem.version,
-                 changedItem.updatedAt,
-                 changedItem.id
-             ]);
+        await this.sessionORMRepo.save(changedItem);
         return ;
     }
+
+private buildFindOptions(dto: SessionQueryFilterDto): FindOneOptions<Session> {
+    const options: FindOneOptions<Session> = {};
+
+    const where: any = {};
+
+    if (dto.deviceId !== undefined && dto.notDeviceId)
+        where.deviceId = Not(dto.deviceId);
+
+    if (dto.deviceId !== undefined && !dto.notDeviceId)
+        where.deviceId = dto.deviceId;
+
+    if (dto.userId !== undefined )
+        where.user = {id: +dto.userId};
+
+    if (dto.version !== undefined)
+        where.version = dto.version;
+
+    if (Object.keys(where).length > 0)
+        options.where = where;
+
+    options.relations = {
+        user: true,
+    };
+
+    return options;
+}
 
     mapTokenFromSession(session: Session): TokenPayloadDto{
         return {

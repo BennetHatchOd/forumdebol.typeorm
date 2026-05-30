@@ -36,8 +36,8 @@ export class CreateCodeConfirmationEmailHandler implements ICommandHandler<Creat
                 })
         }
 
-        const confirmEmail = ConfirmEmail.createInstance(userId, this.userConfig.timeLifeEmailCode);
-        await this.userRepository.saveCode(confirmEmail, CodeTable.CONFIRM_EMAIL);
+        const confirmEmail = ConfirmEmail.create(userId, this.userConfig.timeLifeEmailCode);
+        await this.userRepository.save(confirmEmail, CodeTable.CONFIRM_EMAIL);
         this.mailService.createConfirmEmail(email, confirmEmail.code);
         return;
     }

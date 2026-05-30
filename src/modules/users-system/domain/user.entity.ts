@@ -1,44 +1,31 @@
 import { UserInputDto } from '@modules/users-system/dto/input/user.input.dto';
+import { RealObjectBaseDBEntity } from '@core/domain/real.object.base.entity';
+import { Column, Entity } from 'typeorm';
+import { UserFieldRestrict } from '@modules/users-system/field.restrictions';
 
-export class User {
-    id!: number;
+@Entity()
+export class User extends RealObjectBaseDBEntity{
+    @Column({ type: 'varchar', length: UserFieldRestrict.loginMax,
+        unique: true, })
     login: string;
+
+    @Column({ type: 'varchar', unique: true, })
     email: string;
+
+    @Column({ type: 'varchar' })
     passwordHash: string;
+
+    @Column({ type: 'boolean', default: 'true' })
     isConfirmEmail: boolean;
-    createdAt: Date;
-    deletedAt: Date | null;
 
-    delete() {
-        if (this.deletedAt !== null) {
-            throw new Error('User already deleted');
-        }
-        this.deletedAt = new Date();
-    }
-
-    static createInstance(dto: UserInputDto, isConfirmEmail: boolean): User {
+    static create(dto: UserInputDto, isConfirmEmail: boolean): User {
         const user = new this();
         user.login = dto.login;
         user.email = dto.email;
         user.passwordHash = dto.password;
         user.isConfirmEmail = isConfirmEmail;
-        user.deletedAt = null;
-       // user.createdAt = new Date();
 
         return user;
     }
 
-    static copyInstance(dto: User): User {
-        const user = new this();
-       
-        user.id = dto.id;
-        user.login = dto.login;
-        user.email = dto.email;
-        user.passwordHash = dto.passwordHash;
-        user.isConfirmEmail = dto.isConfirmEmail;
-        user.createdAt = dto.createdAt;
-        user.deletedAt = dto.deletedAt;
-
-        return user;
-    }
 }

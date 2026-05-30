@@ -20,7 +20,7 @@ import { DatabaseConfig } from '@core/db.config';
             useFactory: (configService: ConfigService<DatabaseConfig>) =>
                 configService.get('database', { infer: true })!,
         }),
-        BloggingPlatformModule,
+       // BloggingPlatformModule,
         UserSystemModule,
         CoreModule,
         NotificationsModule,

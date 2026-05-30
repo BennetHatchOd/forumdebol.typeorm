@@ -17,7 +17,7 @@ export class PostRepository {
 
         const searchItem: Post[] = await this.dataSource.query(`
                     SELECT *
-                    FROM public.posts
+                    FROM public.post
                     WHERE id = $1 AND "deletedAt" IS NULL 
                     LIMIT 1`,
             [numericId]
@@ -39,7 +39,7 @@ export class PostRepository {
 
         const searchItem: Post[] = await this.dataSource.query(`
                     SELECT *
-                    FROM public.posts
+                    FROM public.post
                     WHERE id = $1 AND "blogId" = $2 AND "deletedAt" IS NULL 
                     LIMIT 1`,
             [numericId, numericBlogId]
@@ -59,7 +59,7 @@ export class PostRepository {
         const result = await this.dataSource.query(
             `SELECT EXISTS(
                 SELECT 1 
-                FROM public.posts 
+                FROM public.post 
                 WHERE id = $1 AND "deletedAt" IS NULL)`,
             [id],
         );
@@ -71,7 +71,7 @@ export class PostRepository {
 
         if(!savedItem.id){
             const result = await this.dataSource.query(`
-                INSERT INTO public.posts(
+                INSERT INTO public.post(
                     title, "shortDescription", content, "blogId", "deletedAt")
                 VALUES($1, $2, $3, $4, $5)
                 RETURNING id, "createdAt";`,
@@ -86,7 +86,7 @@ export class PostRepository {
             return
         }
 
-        await this.dataSource.query(`UPDATE public.posts
+        await this.dataSource.query(`UPDATE public.post
         SET
             title = $1,
             content = $2, 

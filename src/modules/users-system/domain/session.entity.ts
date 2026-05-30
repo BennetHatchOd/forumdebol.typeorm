@@ -1,47 +1,49 @@
 import ShortUniqueId from 'short-unique-id';
 import { SessionInputDto } from '@modules/users-system/dto/input/session.input.dto';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, RelationId, UpdateDateColumn } from 'typeorm';
+import { User } from '@modules/users-system/domain/user.entity';
 
+@Entity()
 export class Session {
-    id: number;
-    userId:     number;
-    version:    string;
+
+    @PrimaryGeneratedColumn('uuid')
     deviceId:   string;
+
+    @ManyToOne(()=> User, { nullable: false })
+    user: User;
+
+    @RelationId((session: Session) => session.user)
+    userId: number;
+
+    @Column({ type: 'varchar', length: 10 })
+    version:    string;
+
+    @Column({ type: 'varchar' })
     deviceName: string;
-    ip:         string;
+
+    @Column({type: 'varchar'})
+    ip: string;
+
+    @UpdateDateColumn()
     updatedAt:  Date;
 
     update(){
         const uid = new ShortUniqueId({ length: 7 });
 
         this.version = uid.rnd();
-        this.updatedAt = new Date();
     }
 
     static createInstance(dto: SessionInputDto,
     ): Session {
-        const uid = new ShortUniqueId({ length: 7 });
+        const uuid = new ShortUniqueId({ length: 7 });
         const session = new this();
 
-        session.userId = +dto.userId;
+        session.user = {id: +dto.userId} as User;
         session.deviceName = dto.deviceName;
         session.ip = dto.ip;
 
-        session.deviceId = uid.rnd();
-        session.version = uid.rnd();
-        session.updatedAt = new Date();
+        session.version = uuid.rnd();
         return session;
     }
-    static copyInstance(dto: Session): Session {
-        const session = new this();
 
-        session.id = dto.id;
-        session.userId = dto.userId;
-        session.version = dto.version;
-        session.deviceId = dto.deviceId;
-        session.deviceName = dto.deviceName;
-        session.ip = dto.ip;
-        session.updatedAt = dto.updatedAt;
-
-        return session;
-    }
 }
