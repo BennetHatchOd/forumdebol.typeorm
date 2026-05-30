@@ -23,6 +23,7 @@ import {
     CreateCodeConfirmationEmailCommand
 } from '@modules/users-system/application/commands/create.code.confirmation.email.usecase';
 import { AskNewPasswordCommand } from '@modules/users-system/application/commands/ask.new.password.usecase';
+import { SetNewPasswordCommand } from '@modules/users-system/application/commands/set.new.password.usecase';
 
 
 @Controller(URL_PATH.auth)
@@ -94,7 +95,8 @@ export class AuthController {
     @HttpCode(HttpStatus.NO_CONTENT)
     async resentPassword(@Body()recoveryPassport: NewPasswordInputDto):Promise<void> {
 
-        return await this.userService.setNewPassword(recoveryPassport)
+        await this.commandBus.execute(new SetNewPasswordCommand(recoveryPassport));
+        return;
     }
 
     @Get(AUTH_PATH.aboutMe)

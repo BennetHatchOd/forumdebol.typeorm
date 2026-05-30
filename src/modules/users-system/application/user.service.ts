@@ -63,33 +63,6 @@ export class UserService {
         );
     }
 
-
-    async setNewPassword(recoveryPassword: NewPasswordInputDto): Promise<void> {
-        // Sets a new password if a valid recovery code was received
-
-        const userNewPassword: AuthCodeContext|null =
-            await this.userRepository.findAndDeleteAuthCode(recoveryPassword.recoveryCode,
-                                                            CodeTable.RESET_PASSWORD);
-
-        if (!userNewPassword || isBefore(userNewPassword.expirationTime, new Date()))
-            throw new DomainException({
-                message: "a valid recovery code wasn't received or expired",
-                code: DomainExceptionCode.PasswordRecoveryCodeNotFound,
-                extension: [{message: "a valid recovery code wasn't received or expired",
-                    field: "recoveryCode"}]
-            });
-
-        const hash: string = await this.passwordHashService.createHash(
-            recoveryPassword.newPassword,
-            this.userConfig.saltRound,
-        );
-        const user = userNewPassword.user;
-        user.passwordHash = hash;
-        await this.userRepository.save(user, CodeTable.USER);
-
-        return;
-    }
-
     async aboutMe(userId: string): Promise<UserAboutViewDto> {
         const user = (await this.userRepository.findById(userId));
         const userView = UserAboutViewDto.mapToView(user!);
