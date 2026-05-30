@@ -43,13 +43,13 @@ export class UserQueryRepository {
             const qb = this.userORMRepo.createQueryBuilder('user');
 
             if (queryReq.searchLoginTerm != null && queryReq.searchLoginTerm !== '') {
-                qb.andWhere('user.login ILIKE :login', {
+                qb.orWhere('user.login ILIKE :login', {
                     login: `%${queryReq.searchLoginTerm}%`,
                 });
             }
 
             if (queryReq.searchEmailTerm != null && queryReq.searchEmailTerm !== '') {
-                qb.andWhere('user.email ILIKE :email', {
+                qb.orWhere('user.email ILIKE :email', {
                     email: `%${queryReq.searchEmailTerm}%`,
                 });
             }
