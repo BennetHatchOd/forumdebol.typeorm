@@ -1,5 +1,5 @@
 import {
-    Column, ManyToOne,
+    Column, JoinColumn, OneToOne,
     PrimaryGeneratedColumn, RelationId,
 } from 'typeorm';
 import { User } from '@modules/users-system/domain/user.entity';
@@ -12,7 +12,8 @@ export class CodeBaseDBEntity {
     @Column()
     expirationTime: Date;
 
-    @ManyToOne(() => User, { nullable: false })
+    @OneToOne(() => User, { nullable: false })
+    @JoinColumn()
     user: User;
 
     @RelationId((code: CodeBaseDBEntity) => code.user)

@@ -27,14 +27,15 @@ export class AskNewPasswordHandler implements ICommandHandler<AskNewPasswordComm
         // Generates a new recovery code and sends it via email without deleting the previous ones.
         // Delete the old codes ONLY after any of the codes are triggered.
 
-        let foundedUser: number | null =
+        let foundedUserId: number | null =
         await this.userRepository.findUserIdByEmail(email, true);
-        if (!foundedUser)
+        if (!foundedUserId)
             return;
         // Even if the current email address is not registered,
         // do not throw an error (to prevent detection of the user's email address)
 
-        const newPassword = NewPassword.create(foundedUser, this.userConfig.timeLifePasswordCode);
+        const newPassword = NewPassword.create(foundedUserId, this.userConfig.timeLifePasswordCode);
+        await this.userRepository.deleteAuthCodeByUser(foundedUserId, CodeTable.CONFIRM_EMAIL);
         await this.userRepository.save(newPassword, CodeTable.RESET_PASSWORD);
         this.mailService.createPasswordRecovery(email, newPassword.code);
 

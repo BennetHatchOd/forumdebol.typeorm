@@ -68,7 +68,7 @@ export class UserRepository {
         return checkedUser;    }
 
     async findUserIdByEmail(email: string, isConfirm: boolean):Promise <number|null>{
-        // search user with unconfirmed email
+        // search user with any email
 
         const checkedUser: User | null = await this.userORMRepo.findOne(
             {where:  { email: email, isConfirmEmail: isConfirm } })
@@ -100,34 +100,44 @@ export class UserRepository {
     }
 
     async findAndDeleteAuthCode(code: string, table: CodeTable): Promise<AuthCodeContext|null> {
-        // Find a user by an unverified email address or recoverable password
+        // Find a user by code for an unverified email address or recoverable password,
         // using the code in the corresponding table.
         // After finding the user, delete the code entry from the table.
 
+        let user: AuthCodeContext | null = null;
         switch (table){
             case "ConfirmationEmail":
                 const confirm: ConfirmEmail|null = await this.confirmEmailORMRepo.findOne({
                                                                         where: {code: code},
                                                                         relations: {user: true}});
                 if(confirm){
-                    const user: AuthCodeContext = new AuthCodeContext(confirm.user, confirm.expirationTime)
+                    user = new AuthCodeContext(confirm.user, confirm.expirationTime)
                     await this.confirmEmailORMRepo.remove(confirm);
-                    return user;
                 }
-                return null;
             case "ResetPassword":
                 const pass: NewPassword|null = await this.newPasswordORMRepo.findOne({
                                                                         where: {code: code},
                                                                         relations: {user: true}});
-
                 if(pass){
-                    const user: AuthCodeContext = new AuthCodeContext(pass.user, pass.expirationTime)
+                    user = new AuthCodeContext(pass.user, pass.expirationTime)
                     await this.newPasswordORMRepo.remove(pass);
-                    return user;
                 }
-                return pass;
         }
-        return null;
+        return user;
+    }
+    async deleteAuthCodeByUser(id: number, table: CodeTable): Promise<void> {
+        // delete user's code for an unverified email address or recoverable password,
+        // using the code in the corresponding table.
+
+        let user: AuthCodeContext | null = null;
+        switch (table){
+            case "ConfirmationEmail":
+                await this.confirmEmailORMRepo.delete({user:{id: id}});
+                return ;
+            case "ResetPassword":
+                await this.newPasswordORMRepo.delete({user:{id: id}});
+                return ;
+        }
     }
 
 }

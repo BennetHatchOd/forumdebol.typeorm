@@ -35,6 +35,7 @@ export class CreateCodeConfirmationEmailHandler implements ICommandHandler<Creat
 
 
         const confirmEmail = ConfirmEmail.create(userId, this.userConfig.timeLifeEmailCode);
+        await this.userRepository.deleteAuthCodeByUser(userId, CodeTable.CONFIRM_EMAIL);
         await this.userRepository.save(confirmEmail, CodeTable.CONFIRM_EMAIL);
         this.mailService.createConfirmEmail(email, confirmEmail.code);
         return;
