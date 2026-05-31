@@ -17,7 +17,7 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand, str
     ) {}
 
     async execute({inputDto}: CreateBlogCommand):Promise<string> {
-        const blog: Blog = Blog.createInstance(inputDto);
+        const blog: Blog = Blog.create(inputDto);
         await this.blogRepository.saveBlog(blog);
         return blog.id.toString();
 

@@ -1,20 +1,20 @@
 import { BlogInputDto } from '@modules/blogging.platform/dto/input/blog.input.dto';
+import { RealObjectBaseDBEntity } from '@core/domain/real.object.base.entity';
+import { Column } from 'typeorm';
+import { BlogFieldRestrict } from '@modules/blogging.platform/dto/field.restrictions';
 
-export class Blog {
-    id!: number ;
+export class Blog extends RealObjectBaseDBEntity{
+    @Column({ type: 'varchar', length: BlogFieldRestrict.nameMax})
     name: string;
-    description: string;
-    websiteUrl: string;
-    isMembership: boolean;
-    createdAt: Date;
-    deletedAt:  Date | null;
 
-    delete() {
-        if (this.deletedAt !== null) {
-            throw new Error('Blog already deleted');
-        }
-        this.deletedAt = new Date();
-    }
+    @Column({ type: 'varchar', length: BlogFieldRestrict.descriptionMax})
+    description: string;
+
+    @Column({ type: 'varchar', length: BlogFieldRestrict.websiteUrlMax})
+    websiteUrl: string;
+
+    @Column({ type: 'boolean', default: 'true' })
+    isMembership: boolean;
 
     update(change: BlogInputDto) {
         this.name = change.name;
@@ -22,29 +22,12 @@ export class Blog {
         this.websiteUrl = change.websiteUrl;
     }
 
-    static createInstance(dto: BlogInputDto): Blog {
+    static create(dto: BlogInputDto): Blog {
         const blog = new this();
         blog.name = dto.name;
         blog.description = dto.description;
         blog.websiteUrl = dto.websiteUrl;
-        blog.isMembership = false;
-        blog.createdAt = new Date();
-        blog.deletedAt = null;
 
         return blog;
       }
-
-    static copyInstance(dto: Blog): Blog {
-        const blog = new this();
-
-        blog.id = dto.id;
-        blog.description = dto.description;
-        blog.websiteUrl = dto.websiteUrl;
-        blog.isMembership = dto.isMembership;
-        blog.name = dto.name;
-        blog.createdAt = dto.createdAt;
-        blog.deletedAt = dto.deletedAt;
-
-        return blog;
-    }
 }

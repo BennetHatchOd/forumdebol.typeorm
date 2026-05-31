@@ -15,11 +15,14 @@ import { ReadUserIdGuard } from '@core/guards/read.userid';
 import { BlogController } from '@modules/blogging.platform/api/blog.controller';
 import { QueryHandlers } from '@modules/blogging.platform/application/queries';
 import { CommandHandlers } from '@modules/blogging.platform/application/commands';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Blog } from '@modules/blogging.platform/domain/blog.entity';
 
 @Module({
     imports: [
         CqrsModule,
         AuthModule,
+        TypeOrmModule.forFeature([Blog]),
     ],
     controllers: [
         BlogAdminController,
