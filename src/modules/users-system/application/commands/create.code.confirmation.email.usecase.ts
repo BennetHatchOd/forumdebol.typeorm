@@ -10,7 +10,6 @@ import { ConfirmEmail } from '@modules/users-system/domain/confirm.email.entity'
 export class CreateCodeConfirmationEmailCommand extends Command<void> {
     constructor(
         public email: string,
-        public userId: number | null = null,
     ) {
         super()}
 }
@@ -24,17 +23,16 @@ export class CreateCodeConfirmationEmailHandler implements ICommandHandler<Creat
 
     ) {}
 
-    async execute({email, userId }: CreateCodeConfirmationEmailCommand):Promise<void> {
-        if(!userId){
-            userId = await this.userRepository.findUserIdByEmail(email, false);
-            if(!userId)
-                throw new DomainException({
-                    message: "user with unconfirmed email not found",
-                    code: DomainExceptionCode.EmailNotExist,
-                    extension: [{message: "user with unconfirmed email not found",
-                        field: "email"}]
-                })
-        }
+    async execute({email }: CreateCodeConfirmationEmailCommand):Promise<void> {
+
+        const userId = await this.userRepository.findUserIdByEmail(email, false);
+        if(!userId)
+            throw new DomainException({
+                message: "user with unconfirmed email not found",
+                code: DomainExceptionCode.EmailNotExist,
+                extension: [{message: "user with unconfirmed email not found",
+                    field: "email"}] })
+
 
         const confirmEmail = ConfirmEmail.create(userId, this.userConfig.timeLifeEmailCode);
         await this.userRepository.save(confirmEmail, CodeTable.CONFIRM_EMAIL);

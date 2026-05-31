@@ -1,40 +1,30 @@
 import { CreateCommentDto } from '../dto/create/create.comment.dto';
+import { RealObjectBaseDBEntity } from '@core/domain/real.object.base.entity';
+import { Column, ManyToOne } from 'typeorm';
+import { CommentFieldRestrict } from '@modules/blogging.platform/dto/field.restrictions';
+import { Post } from '@modules/blogging.platform/domain/post.entity';
+import { User } from '@modules/users-system/domain/user.entity';
 
-export class Comment {
-    id: number;
+export class Comment extends RealObjectBaseDBEntity{
+
+    @Column({ type: 'varchar', length: CommentFieldRestrict.contentMax})
     content: string;
-    postId: number;
-    userId: number;
-    createdAt: Date;
-    deletedAt:  Date | null;
 
-    delete() {
-        if (this.deletedAt !== null) {
-            throw new Error('Comment already deleted');
-        }
-        this.deletedAt = new Date();
-    }
+    @ManyToOne(() => Post)
+    postId: number;
+
+    @ManyToOne(() => User)
+    userId: number;
 
     async update(change: string): Promise<void> {
         this.content = change;
     }
 
-    static createInstance(createDto: CreateCommentDto): Comment {
+    static create(createDto: CreateCommentDto): Comment {
         const comment = new this();
         comment.content = createDto.content;
         comment.postId = +createDto.postId;
         comment.userId = +createDto.userId;
-        return comment;
-    }
-
-    static copyInstance(dto: Comment): Comment {
-        const comment = new this();
-        comment.id = dto.id;
-        comment.content = dto.content;
-        comment.postId = dto.postId;
-        comment.userId = dto.userId;
-        comment.createdAt = dto.createdAt;
-        comment.deletedAt = dto.deletedAt;
         return comment;
     }
 }
