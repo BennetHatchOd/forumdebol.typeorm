@@ -1,4 +1,4 @@
-import { Command, CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Command, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { UserInputDto } from '@modules/users-system/dto/input/user.input.dto';
@@ -6,10 +6,9 @@ import { UserConfig } from '@modules/users-system/config/user.config';
 import { PasswordHashService } from '../password.hash.service';
 import { UserRepository } from '@modules/users-system/infrastucture/user.repository';
 import { User } from '@modules/users-system/domain/user.entity';
-import {
-    CreateCodeConfirmationEmailCommand
-} from '@modules/users-system/application/commands/create.code.confirmation.email.usecase';
 import { CodeTable } from '@modules/users-system/infrastucture/code.type';
+import { ConfirmEmail } from '@modules/users-system/domain/confirm.email.entity';
+import { EmailService } from '@modules/notifications/application/email.service';
 
 export class CreateUserCommand extends Command<string> {
     constructor(
@@ -26,7 +25,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, str
         private readonly userRepository: UserRepository,
         private readonly passwordHashService: PasswordHashService,
         private readonly userConfig: UserConfig,
-        private readonly commandBus: CommandBus,
+        private readonly mailService: EmailService,
     ) {}
 
     async execute({userDto, isConfirmedEmail}: CreateUserCommand):Promise<string> {
@@ -64,9 +63,10 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, str
 
         await this.userRepository.save(createdUser, CodeTable.USER);
 
-        if(toSentEmail && !isConfirmedEmail)
-            await this.commandBus.execute(new CreateCodeConfirmationEmailCommand(createdUser.email, createdUser.id))
         if(!isConfirmedEmail) {
+            const confirmEmail = ConfirmEmail.create(createdUser.id, this.userConfig.timeLifeEmailCode);
+            await this.userRepository.save(confirmEmail, CodeTable.CONFIRM_EMAIL);
+            this.mailService.createConfirmEmail(createdUser.email, confirmEmail.code);
         }
         return createdUser.id.toString();
     }
