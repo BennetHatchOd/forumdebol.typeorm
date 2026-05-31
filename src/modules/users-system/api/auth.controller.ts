@@ -64,7 +64,7 @@ export class AuthController {
     @HttpCode(HttpStatus.NO_CONTENT)
     async registration(@Body() inputUserDto: UserInputDto) : Promise<void> {
 
-        await this.commandBus.execute(new CreateUserCommand(inputUserDto, false, true));
+        await this.commandBus.execute(new CreateUserCommand(inputUserDto, false));
         return;
     }
 

@@ -29,7 +29,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, str
         private readonly commandBus: CommandBus,
     ) {}
 
-    async execute({userDto, isConfirmedEmail, toSentEmail}: CreateUserCommand):Promise<string> {
+    async execute({userDto, isConfirmedEmail}: CreateUserCommand):Promise<string> {
 
         // check the uniqueness of the login and email
         const checkUniq: string[] | null = await this.userRepository.checkUniq(
@@ -66,6 +66,8 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, str
 
         if(toSentEmail && !isConfirmedEmail)
             await this.commandBus.execute(new CreateCodeConfirmationEmailCommand(createdUser.email, createdUser.id))
+        if(!isConfirmedEmail) {
+        }
         return createdUser.id.toString();
     }
 }
