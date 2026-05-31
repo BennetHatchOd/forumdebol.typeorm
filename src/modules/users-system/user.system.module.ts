@@ -27,6 +27,7 @@ import { User } from '@modules/users-system/domain/user.entity';
 import { NewPassword } from '@modules/users-system/domain/new.password.entity';
 import { Session } from '@modules/users-system/domain/session.entity';
 import { ConfirmEmail } from '@modules/users-system/domain/confirm.email.entity';
+import { CodeRepository } from '@modules/users-system/infrastucture/code.repository';
 
 @Module({
     imports: [
@@ -62,6 +63,7 @@ import { ConfirmEmail } from '@modules/users-system/domain/confirm.email.entity'
         JwtStrategy,
         myBasicStrategy,
         ConfigService,
+        CodeRepository,
         SessionRepository,
         SessionQueryRepository,
         // {

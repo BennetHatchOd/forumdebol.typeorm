@@ -5,7 +5,8 @@ import { User } from '@modules/users-system/domain/user.entity';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { AuthCodeContext } from '@modules/users-system/dto/auth.code.context';
-import { CodeTable } from '@modules/users-system/infrastucture/code.type';
+import { CodeTable } from '@modules/users-system/infrastucture/type/code.type';
+import { CodeRepository } from '@modules/users-system/infrastucture/code.repository';
 
 export class ConfirmationEmailCommand extends Command<void> {
     constructor(public code: string) {
@@ -17,11 +18,14 @@ export class ConfirmationEmailCommand extends Command<void> {
 export class ConfirmationEmailHandler
     implements ICommandHandler<ConfirmationEmailCommand>
 {
-    constructor(private userRepository: UserRepository) {}
+    constructor(
+        private codeRepository: CodeRepository,
+        private userRepository: UserRepository,
+                ) {}
 
     async execute({ code }: ConfirmationEmailCommand): Promise<void> {
         const foundUserInfo: AuthCodeContext | null =
-            await this.userRepository.findAndDeleteAuthCode(
+            await this.codeRepository.findAndDeleteAuthCode(
                 code,
                 CodeTable.CONFIRM_EMAIL,
             );
@@ -34,7 +38,7 @@ export class ConfirmationEmailHandler
         ) {
             const user: User = foundUserInfo.user;
             user.isConfirmEmail = true;
-            await this.userRepository.save(user, CodeTable.USER);
+            await this.userRepository.save(user);
             return;
         }
         throw new DomainException({

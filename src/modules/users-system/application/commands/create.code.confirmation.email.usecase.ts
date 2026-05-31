@@ -4,8 +4,9 @@ import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { UserConfig } from '@modules/users-system/config/user.config';
 import { EmailService } from '@modules/notifications/application/email.service';
-import { CodeTable } from '@modules/users-system/infrastucture/code.type';
+import { CodeTable } from '@modules/users-system/infrastucture/type/code.type';
 import { ConfirmEmail } from '@modules/users-system/domain/confirm.email.entity';
+import { CodeRepository } from '@modules/users-system/infrastucture/code.repository';
 
 export class CreateCodeConfirmationEmailCommand extends Command<void> {
     constructor(
@@ -18,6 +19,7 @@ export class CreateCodeConfirmationEmailCommand extends Command<void> {
 export class CreateCodeConfirmationEmailHandler implements ICommandHandler<CreateCodeConfirmationEmailCommand> {
     constructor(
         private userRepository: UserRepository,
+        private codeRepository: CodeRepository,
         private readonly userConfig: UserConfig,
         private readonly mailService: EmailService,
 
@@ -35,8 +37,8 @@ export class CreateCodeConfirmationEmailHandler implements ICommandHandler<Creat
 
 
         const confirmEmail = ConfirmEmail.create(userId, this.userConfig.timeLifeEmailCode);
-        await this.userRepository.deleteAuthCodeByUser(userId, CodeTable.CONFIRM_EMAIL);
-        await this.userRepository.save(confirmEmail, CodeTable.CONFIRM_EMAIL);
+        await this.codeRepository.deleteAuthCodeByUser(userId, CodeTable.CONFIRM_EMAIL);
+        await this.codeRepository.save(confirmEmail, CodeTable.CONFIRM_EMAIL);
         this.mailService.createConfirmEmail(email, confirmEmail.code);
         return;
     }

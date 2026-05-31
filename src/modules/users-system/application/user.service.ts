@@ -10,7 +10,7 @@ import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { NewPasswordInputDto } from '@src/modules/users-system/dto/input/new.password.input.dto';
 import { UserRepository } from '@modules/users-system/infrastucture/user.repository';
 import { AuthCodeContext } from '@modules/users-system/dto/auth.code.context';
-import { CodeTable } from '@modules/users-system/infrastucture/code.type';
+import { CodeTable } from '@modules/users-system/infrastucture/type/code.type';
 import { User } from '@modules/users-system/domain/user.entity';
 
 @Injectable()

@@ -3,7 +3,7 @@ import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { UserRepository } from '@modules/users-system/infrastucture/user.repository';
 import { User } from '@modules/users-system/domain/user.entity';
-import { CodeTable } from '@modules/users-system/infrastucture/code.type';
+import { CodeTable } from '@modules/users-system/infrastucture/type/code.type';
 
 export class DeleteUserCommand extends Command<void> {
     constructor(

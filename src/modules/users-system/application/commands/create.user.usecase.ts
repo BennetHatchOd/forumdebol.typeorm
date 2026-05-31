@@ -6,9 +6,10 @@ import { UserConfig } from '@modules/users-system/config/user.config';
 import { PasswordHashService } from '../password.hash.service';
 import { UserRepository } from '@modules/users-system/infrastucture/user.repository';
 import { User } from '@modules/users-system/domain/user.entity';
-import { CodeTable } from '@modules/users-system/infrastucture/code.type';
+import { CodeTable } from '@modules/users-system/infrastucture/type/code.type';
 import { ConfirmEmail } from '@modules/users-system/domain/confirm.email.entity';
 import { EmailService } from '@modules/notifications/application/email.service';
+import { CodeRepository } from '@modules/users-system/infrastucture/code.repository';
 
 export class CreateUserCommand extends Command<string> {
     constructor(
@@ -23,6 +24,7 @@ export class CreateUserCommand extends Command<string> {
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand, string> {
     constructor(
         private readonly userRepository: UserRepository,
+        private readonly codeRepository: CodeRepository,
         private readonly passwordHashService: PasswordHashService,
         private readonly userConfig: UserConfig,
         private readonly mailService: EmailService,
@@ -61,11 +63,11 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand, str
             },
             isConfirmedEmail);
 
-        await this.userRepository.save(createdUser, CodeTable.USER);
+        await this.userRepository.save(createdUser);
 
         if(!isConfirmedEmail) {
             const confirmEmail = ConfirmEmail.create(createdUser.id, this.userConfig.timeLifeEmailCode);
-            await this.userRepository.save(confirmEmail, CodeTable.CONFIRM_EMAIL);
+            await this.codeRepository.save(confirmEmail, CodeTable.CONFIRM_EMAIL);
             this.mailService.createConfirmEmail(createdUser.email, confirmEmail.code);
         }
         return createdUser.id.toString();

@@ -2,8 +2,9 @@ import { Command, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserRepository } from '@modules/users-system/infrastucture/user.repository';
 import { UserConfig } from '@modules/users-system/config/user.config';
 import { EmailService } from '@modules/notifications/application/email.service';
-import { CodeTable } from '@modules/users-system/infrastucture/code.type';
+import { CodeTable } from '@modules/users-system/infrastucture/type/code.type';
 import { NewPassword } from '@modules/users-system/domain/new.password.entity';
+import { CodeRepository } from '@modules/users-system/infrastucture/code.repository';
 
 export class AskNewPasswordCommand extends Command<void> {
     constructor(
@@ -15,6 +16,7 @@ export class AskNewPasswordCommand extends Command<void> {
 @CommandHandler(AskNewPasswordCommand)
 export class AskNewPasswordHandler implements ICommandHandler<AskNewPasswordCommand> {
     constructor(
+        private codeRepository: CodeRepository,
         private userRepository: UserRepository,
         private readonly userConfig: UserConfig,
         private readonly mailService: EmailService,
@@ -35,8 +37,8 @@ export class AskNewPasswordHandler implements ICommandHandler<AskNewPasswordComm
         // do not throw an error (to prevent detection of the user's email address)
 
         const newPassword = NewPassword.create(foundedUserId, this.userConfig.timeLifePasswordCode);
-        await this.userRepository.deleteAuthCodeByUser(foundedUserId, CodeTable.CONFIRM_EMAIL);
-        await this.userRepository.save(newPassword, CodeTable.RESET_PASSWORD);
+        await this.codeRepository.deleteAuthCodeByUser(foundedUserId, CodeTable.CONFIRM_EMAIL);
+        await this.codeRepository.save(newPassword, CodeTable.RESET_PASSWORD);
         this.mailService.createPasswordRecovery(email, newPassword.code);
 
         return;
