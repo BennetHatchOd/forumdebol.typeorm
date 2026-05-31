@@ -1,25 +1,23 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Model } from 'mongoose';
 import { PostInputDto } from '../dto/input/post.input.dto';
 import { PostFieldRestrict } from '../dto/field.restrictions';
 import { PostByBlogInputDto } from '@modules/blogging.platform/dto/input/post.by.blog.input.dto';
+import { RealObjectBaseDBEntity } from '@core/domain/real.object.base.entity';
+import { Column, ManyToOne } from 'typeorm';
+import { Blog } from '@modules/blogging.platform/domain/blog.entity';
 
 
-export class Post {
-    id: number;
+export class Post extends RealObjectBaseDBEntity{
+    @Column({ type: 'varchar', length: PostFieldRestrict.titleMax})
     title: string;
-    shortDescription: string;
-    content: string;
-    blogId: number;
-    createdAt: Date;
-    deletedAt:  Date | null;
 
-    delete() {
-        if (this.deletedAt !== null) {
-            throw new Error('Post already deleted');
-        }
-        this.deletedAt = new Date();
-    }
+    @Column({ type: 'varchar', length: PostFieldRestrict.shortDescriptionMax})
+    shortDescription: string;
+
+    @Column({ type: 'varchar', length: PostFieldRestrict.contentMax})
+    content: string;
+
+    @ManyToOne(() => Blog)
+    blog: Blog;
 
     async update(change: PostByBlogInputDto) {
         this.title = change.title;
@@ -27,26 +25,12 @@ export class Post {
         this.content = change.content;
     }
 
-    static createInstance(createDto: PostInputDto): Post {
+    static create(createDto: PostInputDto): Post {
         const post = new this();
         post.title = createDto.title;
         post.shortDescription = createDto.shortDescription;
         post.content = createDto.content;
-        post.blogId = +createDto.blogId;
-
-        return post;
-    }
-
-    static copyInstance(dto: Post): Post {
-        const post = new this();
-
-        post.id = dto.id;
-        post.content = dto.content;
-        post.title = dto.title;
-        post.shortDescription = dto.shortDescription;
-        post.blogId = dto.blogId;
-        post.createdAt = dto.createdAt;
-        post.deletedAt = dto.deletedAt;
+        post.blog = {id:+createDto.blogId} as Blog;
 
         return post;
     }
