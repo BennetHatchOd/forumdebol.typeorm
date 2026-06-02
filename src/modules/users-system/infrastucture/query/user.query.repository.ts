@@ -8,6 +8,7 @@ import { EmptyPaginator } from '@core/dto/empty.paginator';
 import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { User } from '@modules/users-system/domain/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { isDbId } from '@core/is.db.id';
 
 @Injectable()
 export class UserQueryRepository {
@@ -19,14 +20,14 @@ export class UserQueryRepository {
     async  findById(id: string): Promise<UserViewDto> {
         // если пост не найден, выкидываем ошибку 404 прямо в репозитории
 
-        const numericId = Number(id);
-        if( !Number.isInteger(numericId) || numericId < 1)
+        const idDB = isDbId(id);
+        if (!idDB)
             throw new DomainException({
                 message: 'user not found',
                 code: DomainExceptionCode.NotFound,
             });
 
-        const user: User|null = await this.userORMRepo.findOne({where: {id: numericId}});
+        const user: User|null = await this.userORMRepo.findOne({where: {id: idDB}});
 
         if(!user){
             throw new DomainException({

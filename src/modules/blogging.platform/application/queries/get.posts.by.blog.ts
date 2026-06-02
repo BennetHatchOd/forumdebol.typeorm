@@ -6,6 +6,7 @@ import { IQueryHandler, Query, QueryHandler } from '@nestjs/cqrs';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { GetPostQueryParams } from '@modules/blogging.platform/dto/input/get.post.query.params.input.dto';
+import { isDbId } from '@core/is.db.id';
 
 export class GetPostsByBlogQuery extends Query<PaginatedViewDto<PostViewDto>> {
     constructor(
@@ -24,7 +25,12 @@ export class GetPostsByBlogHandler implements IQueryHandler<GetPostsByBlogQuery>
     ) {}
 
     async execute({user, blogId, query}: GetPostsByBlogQuery) {
-        const numericId = Number(blogId);
+        const idDB = isDbId(blogId);
+        if(!idDB)
+            throw new DomainException({
+                message: 'blog not found',
+                code: DomainExceptionCode.NotFound,
+            });
         const blog: boolean = await this.blogRepository.existsById(blogId);
         if (!blog)
             throw new DomainException({

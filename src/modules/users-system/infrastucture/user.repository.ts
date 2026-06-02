@@ -2,6 +2,7 @@ import { User } from '../domain/user.entity';
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { isDbId } from '@core/is.db.id';
 
 @Injectable()
 export class UserRepository {
@@ -11,11 +12,11 @@ export class UserRepository {
         ) {}
 
     async findById(id: string): Promise<User | null> {
-         const numericId = Number(id);
-        if (!Number.isInteger(numericId) || numericId < 1) return null;
+        const idDB = isDbId(id);
+        if (!idDB) return null;
 
         const searchItem: User | null = await this.userORMRepo.findOne(
-            {where: { id: numericId }, }
+            {where: { id: idDB }, }
         );
 
         return searchItem;

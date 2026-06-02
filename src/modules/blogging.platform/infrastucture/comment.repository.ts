@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Comment } from '../domain/comment.entity';
 import { DATA_SOURCE } from '@core/constans/data.source';
 import { DataSource } from 'typeorm';
+import { isDbId } from '@core/is.db.id';
 
 @Injectable()
 export class CommentRepository {
@@ -15,15 +16,15 @@ export class CommentRepository {
         // We're looking for a clean comment,
         // working with one Comment table in the database.
 
-        const numericId = Number(id);
-        if (!Number.isInteger(numericId) || numericId < 1) return null;
+        const idDB = isDbId(id);
+        if (!idDB) return null;
 
         const searchItem: Comment[] = await this.dataSource.query(`
                     SELECT *
                     FROM public.comments
                     WHERE id = $1 AND "deletedAt" IS NULL 
                     LIMIT 1`,
-            [numericId]
+            [idDB]
         );
         if (searchItem.length == 0)
             return null;
@@ -32,9 +33,9 @@ export class CommentRepository {
     }
 
     async existsById(id: string): Promise<boolean> {
-        const numericId = Number(id);
-        if (!Number.isInteger(numericId) || numericId < 1)
-            return false;
+        const idDB = isDbId(id);
+        if (!idDB) return false;
+
         const result = await this.dataSource.query(
             `SELECT EXISTS(
                 SELECT 1 

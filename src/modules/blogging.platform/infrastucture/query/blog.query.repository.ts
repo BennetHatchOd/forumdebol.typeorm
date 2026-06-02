@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BlogViewDto } from '../../dto/view/blog.view.dto';
 import { Blog } from '../../domain/blog.entity';
 import { GetBlogQueryParams } from '../../dto/input/get.blog.query.params.input.dto';
@@ -6,40 +6,32 @@ import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { EmptyPaginator } from '@core/dto/empty.paginator';
-import { DATA_SOURCE } from '@core/constans/data.source';
-import { DataSource } from 'typeorm';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { isDbId } from '@core/is.db.id';
 
 
 @Injectable()
 export class BlogQueryRepository {
 
-    constructor(@Inject(DATA_SOURCE) private dataSource: DataSource) {}
+    constructor(@InjectRepository(Blog) private blogORMRepo: Repository<Blog>) {}
 
-    async  findByIdWithCheck(id: string): Promise<BlogViewDto> {
-        const numericId = Number(id);
-        if (!Number.isInteger(numericId) || numericId < 1)
-            throw new DomainException({
     async  findById(id: string): Promise<BlogViewDto> {
+        const idDB = isDbId(id);
+        if (!idDB)
+        throw new DomainException({
                 message: 'blog not found',
                 code: DomainExceptionCode.NotFound});
 
 
-        const blog: Blog[] = await this.dataSource.query(`
-            SELECT * 
-                FROM public.blog 
-                WHERE 
-                      id = $1 
-                  AND "deletedAt" IS NULL 
-                LIMIT 1;`,
-            [numericId]);
+        const blog: Blog | null = await this.blogORMRepo.findOneBy({id: idDB});
 
-        if(blog.length == 0){
+        if(!blog)
             throw new DomainException({
                 message: 'blog not found',
                 code: DomainExceptionCode.NotFound});
-        }
 
-        return BlogViewDto.mapToView(blog[0]);
+        return BlogViewDto.mapToView(blog);
     }
 
     async find(queryReq: GetBlogQueryParams): Promise<PaginatedViewDto<BlogViewDto>> {

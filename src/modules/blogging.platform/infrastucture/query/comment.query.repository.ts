@@ -8,6 +8,7 @@ import { EmptyPaginator } from '@core/dto/empty.paginator';
 import { DATA_SOURCE } from '@core/constans/data.source';
 import { DataSource } from 'typeorm';
 import { CommentRowViewDto } from '@modules/blogging.platform/dto/view/row/comment.row.view.dto';
+import { isDbId } from '@core/is.db.id';
 
 @Injectable()
 export class CommentQueryRepository {
@@ -21,8 +22,8 @@ export class CommentQueryRepository {
     ): Promise<CommentViewDto> {
         // returns a comment by id, if comment isn't found throws an exception
 
-        const numericId = Number(id);
-        if (!Number.isInteger(numericId) || numericId < 1)
+        const idDB = isDbId(id);
+        if (!idDB)
             throw new DomainException({
                 message: 'comment not found',
                 code: DomainExceptionCode.NotFound,
@@ -53,7 +54,7 @@ export class CommentQueryRepository {
                         ) me ON true
                     WHERE c.id = $1
                       AND c."deletedAt" IS NULL;`,
-            [numericId, userId]
+            [idDB, userId]
         );
         if (search.length == 0)
             throw new DomainException({

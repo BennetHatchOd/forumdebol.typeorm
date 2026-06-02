@@ -28,7 +28,7 @@ export class EditBlogHandler implements ICommandHandler<EditBlogCommand, void> {
                 message: 'blog with ${id} not found',
                 code: DomainExceptionCode.NotFound});
         blog.update(editData);
-        this.blogRepository.saveBlog(blog);
+        this.blogRepository.save(blog);
         return;
 
     }

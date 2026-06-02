@@ -15,6 +15,7 @@ import { CommentRowViewDto } from '@modules/blogging.platform/dto/view/row/comme
 import { PostRowViewDto } from '@modules/blogging.platform/dto/view/row/post.row.view.dto';
 import { NewestLikesRowViewDto } from '@modules/blogging.platform/dto/view/newest.likes.row.view.dto';
 import { NewestLikesViewDto } from '@modules/blogging.platform/dto/view/newest.likes.view.dto';
+import { isDbId } from '@core/is.db.id';
 
 @Injectable()
 export class PostQueryRepository {
@@ -27,8 +28,8 @@ export class PostQueryRepository {
         userId: string|null = null): Promise<PostViewDto> {
         // returns a post by id, if post isn't found throws an exception
 
-        const numericId = Number(id);
-        if (!Number.isInteger(numericId) || numericId < 1)
+        const idDB = isDbId(id);
+        if (!idDB)
             throw new DomainException({
                 message: 'post not found',
                 code: DomainExceptionCode.NotFound,
@@ -59,7 +60,7 @@ export class PostQueryRepository {
                         ) me ON true
                     WHERE p.id = $1
                       AND p."deletedAt" IS NULL;`,
-            [numericId, userId]
+            [idDB, userId]
         );
 
         if (post.length == 0)
@@ -79,7 +80,7 @@ export class PostQueryRepository {
                 AND l.status = 'Like'
               ORDER BY l."createdAt" DESC
               LIMIT 3;`,
-              [numericId]);
+              [idDB]);
 
         const likesViewDto = likes.map(l => NewestLikesViewDto.mapToView(l))
         return PostViewDto.mapToView(post[0], likesViewDto);
