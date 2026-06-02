@@ -19,6 +19,7 @@ export class BlogQueryRepository {
         const numericId = Number(id);
         if (!Number.isInteger(numericId) || numericId < 1)
             throw new DomainException({
+    async  findById(id: string): Promise<BlogViewDto> {
                 message: 'blog not found',
                 code: DomainExceptionCode.NotFound});
 

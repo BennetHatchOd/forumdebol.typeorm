@@ -61,7 +61,7 @@ export class BlogAdminController {
         // Create new blog
         const createId: string = await this.commandBus.execute(new CreateBlogCommand(blog));
         const blogView: BlogViewDto =
-            await this.blogQueryRepository.findByIdWithCheck(createId);
+            await this.blogQueryRepository.findById(createId);
         return blogView;
     }
 

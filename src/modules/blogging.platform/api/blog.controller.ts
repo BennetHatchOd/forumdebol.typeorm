@@ -52,7 +52,7 @@ export class BlogController {
         // Returns blog by id
 
         const foundBlog: BlogViewDto =
-            await this.blogQueryRepository.findByIdWithCheck(id);
+            await this.blogQueryRepository.findById(id);
         return foundBlog;
     }
 
