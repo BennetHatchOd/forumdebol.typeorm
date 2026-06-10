@@ -14,5 +14,6 @@ export default (): DatabaseConfig => ({
         database: process.env.DATABASE_NAME,
         autoLoadEntities: true,
         synchronize: process.env.NODE_ENV === 'development',
+        logging: process.env.NODE_ENV === 'development',
     },
 });

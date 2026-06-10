@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { CoreConfig } from '@core/core.config';
+import { CoreConfig } from '@core/configs/core.config';
 import { AppModule } from '@src/app.module';
 import { CoreModule } from '@core/core.module';
 

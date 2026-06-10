@@ -7,10 +7,10 @@ import { UserSystemModule } from '@modules/users-system/user.system.module';
 import { TestingModule } from '@modules/testing/testing.module';
 import { NotificationsModule } from '@modules/notifications/notifications.module';
 import { CoreModule } from '@core/core.module';
-import { CoreConfig } from '@core/core.config';
+import { CoreConfig } from '@core/configs/core.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
-import { DatabaseConfig } from '@core/db.config';
+import { DatabaseConfig } from '@core/configs/db.config';
 
 @Module({
     imports: [

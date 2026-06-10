@@ -89,48 +89,4 @@ export class UserQueryRepository {
         });
     }
 
-
-
-    // async find(queryReq: GetUserQueryParams): Promise<PaginatedViewDto<UserViewDto>> {
-    //
-    //     const totalCount: number = await this.userORMRepo.count(this.buildFindOptions(queryReq));
-    //     if(totalCount === 0)
-    //         return new EmptyPaginator<UserViewDto>();
-    //
-    //     queryReq.calculateSkip(totalCount);
-    //
-    //     const users: User[] = await this.userORMRepo.find(this.buildFindOptions(queryReq));
-    //
-    //     const items = users.map(UserViewDto.mapToView);
-    //
-    //     return PaginatedViewDto.mapToView({
-    //         items: items,
-    //         page: queryReq.pageNumber,
-    //         size: queryReq.pageSize,
-    //         totalCount: totalCount
-    //     })
-    //
-    // }
-    // private buildFindOptions(dto: GetUserQueryParams): FindManyOptions<User> {
-    //     const options: FindManyOptions<User> = {};
-    //
-    //     const where: any = {};
-    //
-    //     if (dto.searchLoginTerm !== null )
-    //         where.login = ILike(`%${dto.searchLoginTerm}%`);
-    //
-    //     if (dto.searchEmailTerm !== null )
-    //         where.email = ILike(`%${dto.searchEmailTerm}%`);
-    //
-    //     if (Object.keys(where).length > 0)
-    //         options.where = where;
-    //
-    //     if (dto.maxPage > 0) {
-    //         options.order = { [dto.sortBy]: dto.sortDirection };
-    //
-    //         options.take = dto.pageSize;
-    //         options.skip = dto.skip;
-    //     }
-    //     return options;
-    // }
 }

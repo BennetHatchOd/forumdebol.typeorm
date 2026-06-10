@@ -4,7 +4,7 @@ import { Connection } from 'mongoose';
 import { initAppModule } from '@src/init.app.module';
 import { appSetup } from '@src/setup/app.setup';
 import { deleteAllData } from './delete.all.data';
-import { CoreConfig } from '@core/core.config';
+import { CoreConfig } from '@core/configs/core.config';
 import { UserConfig } from '@src/modules/users-system/config/user.config';
 import { Blog } from '@src/modules/blogging.platform/domain/blog.entity';
 import { Post } from '@src/modules/blogging.platform/domain/post.entity';

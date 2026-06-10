@@ -1,5 +1,5 @@
 import { UserInputDto } from '@modules/users-system/dto/input/user.input.dto';
-import { RealObjectBaseDBEntity } from '@core/domain/real.object.base.entity';
+import { RealObjectBaseDBEntity } from '@core/domain/real.object.base';
 import { Column, Entity } from 'typeorm';
 import { UserFieldRestrict } from '@modules/users-system/field.restrictions';
 

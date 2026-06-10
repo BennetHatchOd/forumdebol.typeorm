@@ -1,4 +1,4 @@
-import { CodeBaseDBEntity } from '@core/domain/code.base.entity';
+import { CodeBaseDBEntity } from '@modules/users-system/domain/code.base';
 import { Entity } from 'typeorm';
 
 @Entity()

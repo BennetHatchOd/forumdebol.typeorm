@@ -1,4 +1,6 @@
 {
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]},
   "compilerOptions": {
     "resolveJsonModule": true,
     "module": "commonjs",
