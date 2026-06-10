@@ -36,9 +36,8 @@ export class ConfirmationEmailHandler
             !foundUserInfo.user.deletedAt &&
             isBefore(new Date(), foundUserInfo.expirationTime)
         ) {
-            const user: User = foundUserInfo.user;
-            user.isConfirmEmail = true;
-            await this.userRepository.save(user);
+            foundUserInfo.user.isConfirmEmail = true;
+            await this.userRepository.save(foundUserInfo.user);
             return;
         }
         throw new DomainException({
