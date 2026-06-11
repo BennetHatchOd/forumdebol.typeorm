@@ -17,18 +17,20 @@ import { QueryHandlers } from '@modules/blogging.platform/application/queries';
 import { CommandHandlers } from '@modules/blogging.platform/application/commands';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Blog } from '@modules/blogging.platform/domain/blog.entity';
+import { Post } from '@modules/blogging.platform/domain/post.entity';
 
 @Module({
     imports: [
         CqrsModule,
         AuthModule,
-        TypeOrmModule.forFeature([Blog]),
+        TypeOrmModule.forFeature([Blog, Post]),
     ],
     controllers: [
         BlogAdminController,
         BlogController,
         PostController,
-        CommentController],
+        // CommentController
+        ],
     providers: [
         ...CommandHandlers,
         ...QueryHandlers,
@@ -37,9 +39,9 @@ import { Blog } from '@modules/blogging.platform/domain/blog.entity';
         BlogRepository,
         PostQueryRepository,
         PostRepository,
-        CommentQueryRepository,
-        CommentRepository,
-        LikeRepository,
+        // CommentQueryRepository,
+        // CommentRepository,
+        // LikeRepository,
     ],
 })
 export class BloggingPlatformModule {}

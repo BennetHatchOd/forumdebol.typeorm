@@ -97,7 +97,7 @@ export class BlogAdminController {
         const createDto: PostInputDto = { ...dto, blogId: id };
         const createId: string = await this.commandBus.execute(new CreatePostCommand(createDto));
         const postView: PostViewDto =
-            await this.postQueryRepository.findByIdWithCheck(createId, null);
+            await this.postQueryRepository.findByIdForView(createId, null);
         return postView;
     }
 

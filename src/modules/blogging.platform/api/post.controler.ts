@@ -34,7 +34,7 @@ export class PostController {
         private postQueryRepository: PostQueryRepository,
         private commandBus: CommandBus,
         private queryBus: QueryBus,
-        private commentQueryRepository: CommentQueryRepository,
+        // private commentQueryRepository: CommentQueryRepository,
     ){}
 
     @Put(':id/like-status')
@@ -69,25 +69,25 @@ export class PostController {
         return await this.queryBus.execute( new GetCommentsByPostQuery(user, id, query));
     }
 
-    @Post(':id/comments')
-    @UseGuards(AuthGuard('jwt'))
-    async createCommentByPost(
-        @CurrentUserId() user: string,
-        @Param() {id}: IdInputDto,
-        @Body() comment: CommentInputDto
-    ): Promise<CommentViewDto> {
-        // Create comment for specified post, if the post isn't found,
-        // throw the exception "not found"
-
-        const create: CreateCommentDto ={
-            postId: id,
-            content: comment.content,
-            userId: user,
-        }
-        const createdComment: string = await this.commandBus.execute(new CreateCommentCommand(create));
-        return this.commentQueryRepository.findByIdWithCheck(createdComment, user);
-
-    }
+    // @Post(':id/comments')
+    // @UseGuards(AuthGuard('jwt'))
+    // async createCommentByPost(
+    //     @CurrentUserId() user: string,
+    //     @Param() {id}: IdInputDto,
+    //     @Body() comment: CommentInputDto
+    // ): Promise<CommentViewDto> {
+    //     // Create comment for specified post, if the post isn't found,
+    //     // throw the exception "not found"
+    //
+    //     const create: CreateCommentDto ={
+    //         postId: id,
+    //         content: comment.content,
+    //         userId: user,
+    //     }
+    //     const createdComment: string = await this.commandBus.execute(new CreateCommentCommand(create));
+    //     return this.commentQueryRepository.findByIdWithCheck(createdComment, user);
+    //
+    // }
 
     @Get()
     @UseGuards(ReadUserIdGuard)
@@ -111,7 +111,7 @@ export class PostController {
         // Returns post by id
 
 
-        const foundPost: PostViewDto = await this.postQueryRepository.findByIdWithCheck(id, user);
+        const foundPost: PostViewDto = await this.postQueryRepository.findByIdForView(id, user);
         return foundPost;
     }
 }

@@ -10,10 +10,10 @@ import { DeletePostHandler } from '@modules/blogging.platform/application/comman
 import { CreateCommentHandler } from '@modules/blogging.platform/application/commands/create.comment.usecase';
 
 export const CommandHandlers = [
-    MakeLikeHandler,
-    CreateCommentHandler,
-    DeleteCommentHandler,
-    EditCommentHandler,
+    // MakeLikeHandler,
+    // CreateCommentHandler,
+    // DeleteCommentHandler,
+    // EditCommentHandler,
     CreateBlogHandler,
     EditBlogHandler,
     DeleteBlogHandler,

@@ -28,10 +28,13 @@ class PaginationParams {
 }
 
 export enum SortDirection {
-    Asc = 'ASC',
-    Desc = 'DESC',
+    Asc = 'asc',
+    Desc = 'desc',
 }
-
+export const sortDirectionToDb: Record<SortDirection, 'ASC' | 'DESC'> = {
+    [SortDirection.Asc]: 'ASC',
+    [SortDirection.Desc]: 'DESC',
+};
 //базовый класс для query параметров с сортировкой и пагинацией
 //поле sortBy должно быть реализовано в наследниках
 export abstract class BaseSortablePaginationParams<T> extends PaginationParams {

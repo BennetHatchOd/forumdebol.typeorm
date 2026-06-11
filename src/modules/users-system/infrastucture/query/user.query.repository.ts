@@ -9,6 +9,7 @@ import { FindManyOptions, ILike, Repository } from 'typeorm';
 import { User } from '@modules/users-system/domain/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isDbId } from '@core/is.db.id';
+import { sortDirectionToDb } from '@core/dto/base.query.params.input.dto';
 
 @Injectable()
 export class UserQueryRepository {
@@ -55,7 +56,7 @@ export class UserQueryRepository {
                 });
             }
 
-            const sortDirection = queryReq.sortDirection.toUpperCase() as 'ASC' | 'DESC';
+            const sortDirection = sortDirectionToDb[queryReq.sortDirection];
 
             if (collateFields.has(queryReq.sortBy)) {
                 qb.orderBy(`"${queryReq.sortBy}" COLLATE "C"`, sortDirection);

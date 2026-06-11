@@ -33,7 +33,7 @@ export class EditPostHandler implements ICommandHandler<EditPostCommand, void> {
                 code: DomainExceptionCode.NotFound});
 
         post.update(editData);
-        this.postRepository.savePost(post);
+        this.postRepository.save(post);
         return;
 
     }

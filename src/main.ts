@@ -12,7 +12,7 @@ async function bootstrap() {
 
     const port = coreConfig.port;
     await app.listen(port);
-    console.log(`Server running on port: ${port}`);
+    console.log(`Server running http://localhost:${port}`);
 }
 bootstrap();
 

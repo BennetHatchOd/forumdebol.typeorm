@@ -34,8 +34,7 @@ export class DeleteCommentHandler implements ICommandHandler<DeleteCommentComman
                 code: DomainExceptionCode.Forbidden,
             });
 
-        foundComment.delete()
-        await this.commentRepository.saveComment(foundComment);
+        this.commentRepository.delete(foundComment);
         return;
     }
 }

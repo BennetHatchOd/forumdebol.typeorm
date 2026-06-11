@@ -3,6 +3,7 @@ import { Comment } from '../domain/comment.entity';
 import { DATA_SOURCE } from '@core/constans/data.source';
 import { DataSource } from 'typeorm';
 import { isDbId } from '@core/is.db.id';
+import { Post } from '@modules/blogging.platform/domain/post.entity';
 
 @Injectable()
 export class CommentRepository {
@@ -19,17 +20,14 @@ export class CommentRepository {
         const idDB = isDbId(id);
         if (!idDB) return null;
 
-        const searchItem: Comment[] = await this.dataSource.query(`
+        const searchItem: Comment|null = await this.dataSource.query(`
                     SELECT *
                     FROM public.comments
                     WHERE id = $1 AND "deletedAt" IS NULL 
                     LIMIT 1`,
             [idDB]
         );
-        if (searchItem.length == 0)
-            return null;
-
-        return Comment.copyInstance(searchItem[0]);
+        return searchItem;
     }
 
     async existsById(id: string): Promise<boolean> {
@@ -76,5 +74,9 @@ export class CommentRepository {
                 saved.id
             ]);
         return;
+    }
+
+    async delete(foundComment: Comment) {
+            // await this.postORMRepo.softRemove(post);
     }
 }

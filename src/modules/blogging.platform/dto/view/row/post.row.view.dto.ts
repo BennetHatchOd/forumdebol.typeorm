@@ -4,7 +4,6 @@ export class PostRowViewDto {
     shortDescription: string;
     content: string;
     createdAt: Date;
-    deletedAt: Date;
     blogId: number;
     blogName: string;
     likesCount: number

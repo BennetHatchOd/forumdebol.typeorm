@@ -1,8 +1,9 @@
 import { BlogInputDto } from '@modules/blogging.platform/dto/input/blog.input.dto';
-import { RealObjectBaseDBEntity } from '@core/domain/real.object.base.entity';
-import { Column } from 'typeorm';
+import { RealObjectBaseDBEntity } from '@core/domain/real.object.base';
+import { Column, Entity } from 'typeorm';
 import { BlogFieldRestrict } from '@modules/blogging.platform/dto/field.restrictions';
 
+@Entity()
 export class Blog extends RealObjectBaseDBEntity{
     @Column({ type: 'varchar', length: BlogFieldRestrict.nameMax})
     name: string;
@@ -13,7 +14,7 @@ export class Blog extends RealObjectBaseDBEntity{
     @Column({ type: 'varchar', length: BlogFieldRestrict.websiteUrlMax})
     websiteUrl: string;
 
-    @Column({ type: 'boolean', default: 'true' })
+    @Column({ type: 'boolean', default: 'false' })
     isMembership: boolean;
 
     update(change: BlogInputDto) {

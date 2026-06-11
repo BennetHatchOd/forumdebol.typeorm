@@ -199,7 +199,7 @@ describe('PostController (e2e)', () => {
             posts.forEach((post) => {
                 post.blogId = testData.blogs[1].id!.toString();
             })
-            await testData.writeToDB<PostInputDto>(posts, 'posts')
+            await testData.writeToDB<PostInputDto>(posts, 'post')
         })
 
         afterAll(async () => {

@@ -13,7 +13,7 @@ export default (): DatabaseConfig => ({
         password: process.env.DATABASE_PASS,
         database: process.env.DATABASE_NAME,
         autoLoadEntities: true,
-        synchronize: process.env.NODE_ENV === 'development',
-        logging: process.env.NODE_ENV === 'development',
+        synchronize: false,
+        logging: true,
     },
 });

@@ -8,7 +8,7 @@ import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { LikesInfoViewDto } from '@modules/blogging.platform/dto/view/likes.info.view.dto';
 import { EmptyPaginator } from '@core/dto/empty.paginator';
 import { DATA_SOURCE } from '@core/constans/data.source';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { Rating } from '@modules/blogging.platform/dto/enum/rating.enum';
 import console from 'node:console';
 import { CommentRowViewDto } from '@modules/blogging.platform/dto/view/row/comment.row.view.dto';
@@ -16,14 +16,17 @@ import { PostRowViewDto } from '@modules/blogging.platform/dto/view/row/post.row
 import { NewestLikesRowViewDto } from '@modules/blogging.platform/dto/view/newest.likes.row.view.dto';
 import { NewestLikesViewDto } from '@modules/blogging.platform/dto/view/newest.likes.view.dto';
 import { isDbId } from '@core/is.db.id';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { Blog } from '@modules/blogging.platform/domain/blog.entity';
+import { sortDirectionToDb } from '@core/dto/base.query.params.input.dto';
 
 @Injectable()
 export class PostQueryRepository {
     constructor(
-        @Inject(DATA_SOURCE) private dataSource: DataSource,
+        @InjectEntityManager() private entityManager: EntityManager,
     ){}
 
-    async  findByIdWithCheck(
+    async  findByIdForView(
         id: string,
         userId: string|null = null): Promise<PostViewDto> {
         // returns a post by id, if post isn't found throws an exception
@@ -35,164 +38,84 @@ export class PostQueryRepository {
                 code: DomainExceptionCode.NotFound,
             });
 
-        const post: PostRowViewDto[] = await this.dataSource.query(`
-                    SELECT
-                        p.*, 
-                        b.name AS "blogName",
-                        counts.likes_count AS "likesCount",
-                        counts.dislikes_count AS "dislikesCount",
-                        me.my_status AS "myStatus"
-                    FROM public.post p
-                    JOIN public.blog b ON p."blogId" = b.id
-                    LEFT JOIN LATERAL (
-                        SELECT
-                            COUNT(*) FILTER (WHERE l.status = 'Like')::int AS likes_count,
-                            COUNT(*) FILTER (WHERE l.status = 'Dislike')::int AS dislikes_count
-                        FROM public.like_post l
-                        WHERE l."targetId" = p.id
-                        ) counts ON true
-                    LEFT JOIN LATERAL (
-                        SELECT l2.status AS my_status
-                        FROM public.like_post l2
-                        WHERE l2."targetId" = p.id
-                          AND l2."userId" = $2
-                        LIMIT 1
-                        ) me ON true
-                    WHERE p.id = $1
-                      AND p."deletedAt" IS NULL;`,
-            [idDB, userId]
-        );
+        const post= await this.entityManager
+            .createQueryBuilder(Post, 'p')
+            .leftJoin('p.blog', 'b')
+            .select([
+                'p.id as "id"',
+                'p.title as "title"',
+                'p.shortDescription as "shortDescription"',
+                'p.content as "content"',
+                'p.createdAt as "createdAt"',
+                "p.blogId",
+                `b.name as "blogName"`])
+            .where('p.id = :idDB',{idDB:idDB})
+            .getRawOne();
 
-        if (post.length == 0)
+        if (!post)
             throw new DomainException({
                 message: 'post not found',
                 code: DomainExceptionCode.NotFound,
             });
 
-        const likes: NewestLikesRowViewDto[] = await this.dataSource.query(`
-              SELECT
-                  l."createdAt" AS "addedAt",
-                  l."userId"::text AS "userId",
-                  u.login AS "login"
-              FROM public.like_post l
-              JOIN public.user u ON u.id = l."userId"
-              WHERE l."targetId" = $1
-                AND l.status = 'Like'
-              ORDER BY l."createdAt" DESC
-              LIMIT 3;`,
-              [idDB]);
-
-        const likesViewDto = likes.map(l => NewestLikesViewDto.mapToView(l))
-        return PostViewDto.mapToView(post[0], likesViewDto);
+        return PostViewDto.mapToView({...post, dislikesCount: 0, likesCount: 0, myStatus: Rating.None}, [] as NewestLikesViewDto[]);
     }
 
     async find(queryReq: GetPostQueryParams, userId: string|null = null): Promise<PaginatedViewDto<PostViewDto>> {
 
-        let whereSql: string = `p."deletedAt" IS NULL AND b."deletedAt" IS NULL`;
-        const queryParams: any[] = [];
-        const countParams: any[] = [];
+        let userQueryBuilder = this.entityManager.createQueryBuilder(Post, 'p');
 
-        if (queryReq.searchBlogId) {
-            whereSql += ` AND b.id = $1`;
-            queryParams.push(`${queryReq.searchBlogId}`);
-            countParams.push(`${queryReq.searchBlogId}`);
-        }
-        const userIdParam = queryReq.searchBlogId ? '$2' : '$1';
-        queryParams.push(userId);
+        if (queryReq.searchBlogId)
+            userQueryBuilder = userQueryBuilder.where('p.blogId = :blogId', {blogId: queryReq.searchBlogId});
+
+        userQueryBuilder = userQueryBuilder
+            .leftJoin('p.blog', 'b')
+            .select([
+                'p.id as "id"',
+                'p.title as "title"',
+                'p.shortDescription as "shortDescription"',
+                'p.content as "content"',
+                'p.createdAt as "createdAt"',
+                "p.blogId",
+                `b.name as "blogName"`]);
 
         let orderBy: string;
         switch (queryReq.sortBy) {
             case 'title':
             case 'shortDescription':
             case 'content':
-                orderBy =
-                    `p."${queryReq.sortBy}" COLLATE "C" ${queryReq.sortDirection}`
+                userQueryBuilder = userQueryBuilder
+                    .addSelect(`p."${queryReq.sortBy}" COLLATE "C"`, 'collated')
+                    .orderBy('collated', sortDirectionToDb[queryReq.sortDirection])
                 break;
             case 'blogName':
-                orderBy =
-                    `b."name" COLLATE "C" ${queryReq.sortDirection}`
+                userQueryBuilder = userQueryBuilder
+                    .addSelect(`b."name" COLLATE "C"`, 'collated')
+                    .orderBy('collated', sortDirectionToDb[queryReq.sortDirection])
                 break;
                 default:
-                    orderBy =
-                    `p."${queryReq.sortBy}" ${queryReq.sortDirection}`
-        }
-
-        const sqlCount = `
-            SELECT COUNT(*)::int AS count 
-            FROM public.post p 
-            JOIN public.blog b ON b.id = p."blogId" 
-            WHERE ${whereSql};`;
+                    userQueryBuilder = userQueryBuilder
+                        .orderBy (`p."${queryReq.sortBy}"`, `${sortDirectionToDb[queryReq.sortDirection]}`)
+        };
 
         const totalCount: number =
-            +(await this.dataSource.query(sqlCount, countParams))[0].count;
+            await userQueryBuilder.getCount()
         if(totalCount === 0)
             return new EmptyPaginator<PostViewDto>();
 
         queryReq.calculateSkip(totalCount);
 
-        const posts: PostRowViewDto[] = await this.dataSource.query(`
-                    SELECT
-                        p.*, 
-                        b.name AS "blogName",
-                        counts.likes_count AS "likesCount",
-                        counts.dislikes_count AS "dislikesCount",
-                        me.my_status AS "myStatus"
-                    FROM public.post p
-                    JOIN public.blog b ON p."blogId" = b.id
-                    LEFT JOIN LATERAL (
-                        SELECT
-                            COUNT(*) FILTER (WHERE l.status = 'Like')::int AS likes_count,
-                            COUNT(*) FILTER (WHERE l.status = 'Dislike')::int AS dislikes_count
-                        FROM public.like_post l
-                        WHERE l."targetId" = p.id
-                        ) counts ON true
-                    LEFT JOIN LATERAL (
-                        SELECT l2.status AS my_status
-                        FROM public.like_post l2
-                        WHERE l2."targetId" = p.id
-                          AND l2."userId" = ${userIdParam}
-                        LIMIT 1
-                        ) me ON true
-                    WHERE ${whereSql}
-                    ORDER BY ${orderBy}
-                    LIMIT ${queryReq.pageSize} OFFSET ${queryReq.skip};`,
-            queryParams);
-
-        const postsId: number[] = posts.map(p => p.id );
-
-        const newestLikes = await this.dataSource.query(`
-                    SELECT
-                        p.id AS "postId",
-                        COALESCE(
-                                json_agg(
-                                json_build_object(
-                                        'addedAt', nl."createdAt",
-                                        'userId', nl."userId",
-                                        'login', nl."login"
-                                )
-                                ORDER BY nl."createdAt" DESC
-                                        ) FILTER (WHERE nl."userId" IS NOT NULL),
-                                '[]'::json
-                        ) AS "newestLikes"
-                    FROM public.post p
-                             LEFT JOIN LATERAL (
-                        SELECT
-                            l."createdAt",
-                            l."userId"::text AS "userId",
-                            u.login
-                        FROM public.like_post l
-                                 JOIN public.user u ON u.id = l."userId"
-                        WHERE l."targetId" = p.id
-                          AND l.status = 'Like'
-                        ORDER BY l."createdAt" DESC
-                        LIMIT 3
-                        ) nl ON true
-                    WHERE p.id = ANY($1)
-                    GROUP BY p.id;`,
-            [postsId]);
+        const posts: PostRowViewDto[]
+            = await userQueryBuilder
+            .offset(queryReq.skip)
+            .limit(queryReq.pageSize)
+            .getRawMany();
+        const postsView
+            = posts.map((post) =>
+                                {return {...post, dislikesCount: 0, likesCount: 0, myStatus: null}})
 
         return PaginatedViewDto.mapToView({
-            items: this.mapPostsView(posts, newestLikes),
+            items: this.mapPostsView(postsView, []),
             page: queryReq.pageNumber,
             size: queryReq.pageSize,
             totalCount: totalCount,
@@ -203,10 +126,10 @@ export class PostQueryRepository {
 
 
         const postView: PostViewDto[] = posts.map((post: PostRowViewDto) =>{
-            const likes
-                = newestLikes.find(l=> l.postId == post.id )
-                                                                ?.newestLikes
-                                                                ?? [];
+            const likes = []
+                // = newestLikes.find(l=> l.postId == post.id )
+                //                                                 ?.newestLikes
+                //                                                 ?? [];
             return PostViewDto.mapToView( post, likes)})
 
         return postView;

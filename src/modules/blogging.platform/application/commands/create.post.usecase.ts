@@ -29,8 +29,8 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand, str
                 message: 'blog not found',
                 code: DomainExceptionCode.NotFound}
             );
-        const newPost: Post = Post.createInstance(inputDto);
-        await this.postRepository.savePost(newPost);
+        const newPost: Post = Post.create(inputDto);
+        await this.postRepository.save(newPost);
         return newPost.id.toString();
     }
 }
