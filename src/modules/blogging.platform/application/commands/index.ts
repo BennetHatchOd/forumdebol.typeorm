@@ -11,9 +11,9 @@ import { CreateCommentHandler } from '@modules/blogging.platform/application/com
 
 export const CommandHandlers = [
     // MakeLikeHandler,
-    // CreateCommentHandler,
-    // DeleteCommentHandler,
-    // EditCommentHandler,
+    CreateCommentHandler,
+    DeleteCommentHandler,
+    EditCommentHandler,
     CreateBlogHandler,
     EditBlogHandler,
     DeleteBlogHandler,

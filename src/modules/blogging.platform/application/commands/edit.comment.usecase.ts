@@ -35,7 +35,7 @@ export class EditCommentHandler implements ICommandHandler<EditCommentCommand> {
             });
 
         foundComment.update(editDto.content)
-        await this.commentRepository.saveComment(foundComment);
+        await this.commentRepository.save(foundComment);
         return;
     }
 }

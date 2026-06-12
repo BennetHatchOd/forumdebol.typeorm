@@ -26,7 +26,7 @@ export class DeleteBlogHandler implements ICommandHandler<DeleteBlogCommand, voi
                 message: 'blog with id-${id} not found',
                 code: DomainExceptionCode.NotFound});
 
-        this.blogRepository.delete(blog);
+        await this.blogRepository.delete(blog);
         return;
     }
 }

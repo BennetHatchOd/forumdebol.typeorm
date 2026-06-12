@@ -1,32 +1,27 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Comment } from '../domain/comment.entity';
-import { DATA_SOURCE } from '@core/constans/data.source';
-import { DataSource } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { isDbId } from '@core/is.db.id';
-import { Post } from '@modules/blogging.platform/domain/post.entity';
+import { InjectEntityManager } from '@nestjs/typeorm';
 
 @Injectable()
 export class CommentRepository {
 
     constructor(
-        @Inject(DATA_SOURCE) private dataSource: DataSource,
+        @InjectEntityManager() private entityManager: EntityManager,
     ) {}
     
 
     async getCommentById(id: string): Promise<Comment | null> {
-        // We're looking for a clean comment,
-        // working with one Comment table in the database.
 
         const idDB = isDbId(id);
         if (!idDB) return null;
 
-        const searchItem: Comment|null = await this.dataSource.query(`
-                    SELECT *
-                    FROM public.comments
-                    WHERE id = $1 AND "deletedAt" IS NULL 
-                    LIMIT 1`,
-            [idDB]
-        );
+        const searchItem: Comment|null = await this.entityManager
+            .createQueryBuilder(Comment, 'c')
+            .where('c.id = :id', {id: id})
+            .getOne();
+
         return searchItem;
     }
 
@@ -34,49 +29,20 @@ export class CommentRepository {
         const idDB = isDbId(id);
         if (!idDB) return false;
 
-        const result = await this.dataSource.query(
-            `SELECT EXISTS(
-                SELECT 1 
-                FROM public.comments 
-                WHERE id = $1 AND "deletedAt" IS NULL)`,
-            [id],
-        );
+        const result = await this.entityManager
+                .createQueryBuilder(Comment, 'c')
+                .where('c.id = :id', {id: id})
+                .getCount();
 
-        return result[0].exists;
+        return result > 0;
     }
 
-    async saveComment(saved: Comment): Promise<void> {
-
-        if(!saved.id){
-            const result = await this.dataSource.query(`
-                INSERT INTO public.comments(
-                    content, "postId", "userId", "deletedAt")
-                VALUES($1, $2, $3, $4)
-                RETURNING id, "createdAt";`,
-                [   saved.content,
-                    saved.postId,
-                    saved.userId,
-                    saved.deletedAt,
-                ]);
-            saved.id = result[0].id;
-            saved.createdAt = result[0].createdAt;
-            return;
-        }
-
-        await this.dataSource.query(`
-        UPDATE public.comments
-        SET
-            content = $1,
-            "deletedAt" = $2
-        WHERE id = $3;`,
-            [   saved.content,
-                saved.deletedAt,
-                saved.id
-            ]);
+    async save(saved: Comment): Promise<void> {
+        await this.entityManager.save(saved);
         return;
     }
 
-    async delete(foundComment: Comment) {
-            // await this.postORMRepo.softRemove(post);
+    async delete(comment: Comment) {
+        await this.entityManager.softRemove(comment);
     }
 }

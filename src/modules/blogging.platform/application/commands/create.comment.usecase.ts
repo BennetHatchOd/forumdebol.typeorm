@@ -28,7 +28,7 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
                 code: DomainExceptionCode.NotFound,
             });
         const newComment: Comment = Comment.create(createDto);
-        await this.commentRepository.saveComment(newComment);
+        await this.commentRepository.save(newComment);
         return newComment.id.toString();
     }
 }

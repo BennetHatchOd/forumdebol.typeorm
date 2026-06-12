@@ -5,5 +5,5 @@ import {
 
 export const QueryHandlers = [
     GetPostsByBlogHandler,
-    // GetCommentsByPostHandler,
+    GetCommentsByPostHandler,
 ];
