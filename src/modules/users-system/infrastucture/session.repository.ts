@@ -5,8 +5,6 @@ import { TokenPayloadDto } from '@modules/users-system/dto/token.payload.dto';
 import { FindOneOptions, Not, Repository } from 'typeorm';
 import { SessionQueryFilterDto } from '@modules/users-system/dto/session.query.filter.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import console from 'node:console';
-import { isUUID } from 'class-validator';
 
 @Injectable()
 export class SessionRepository {
@@ -47,13 +45,13 @@ export class SessionRepository {
         await this.sessionORMRepo.remove(result);
     }
 
-     async save(changedItem: Session): Promise<void> {
+    async save(changedItem: Session): Promise<void> {
 
         await this.sessionORMRepo.save(changedItem);
         return ;
     }
 
-private buildFindOptions(dto: SessionQueryFilterDto): FindOneOptions<Session> {
+    private buildFindOptions(dto: SessionQueryFilterDto): FindOneOptions<Session> {
     const options: FindOneOptions<Session> = {};
 
     const where: any = {};

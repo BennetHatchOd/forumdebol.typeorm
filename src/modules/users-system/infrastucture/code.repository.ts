@@ -56,6 +56,7 @@ export class CodeRepository {
         }
         return user;
     }
+
     async deleteAuthCodeByUser(id: number, table: CodeTable): Promise<void> {
         // delete user's code for an unverified email address or recoverable password,
         // using the code in the corresponding table.
