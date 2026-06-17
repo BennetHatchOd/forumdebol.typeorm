@@ -6,11 +6,11 @@ export class NewestLikesViewDto{
     login: string
 
 
-    public static mapToView(likes: NewestLikesRowViewDto){
-        const viewDto = new NewestLikesViewDto();
-        viewDto.userId = likes.userId.toString();
-        viewDto.login = likes.login;
-        viewDto.addedAt = likes.addedAt.toISOString();
-        return viewDto;
-    }
+    // public static mapToView(likes: NewestLikesRowViewDto){
+    //     const viewDto = new NewestLikesViewDto();
+    //     viewDto.userId = likes.userId.toString();
+    //     viewDto.login = likes.login;
+    //     viewDto.addedAt = likes.addedAt.toISOString();
+    //     return viewDto;
+    // }
 }

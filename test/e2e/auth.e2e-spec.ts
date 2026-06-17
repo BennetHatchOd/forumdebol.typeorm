@@ -1,10 +1,8 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { Connection } from 'mongoose';
 import { AUTH_PATH, URL_PATH } from '@core/url.path.setting';
 import { initSettings } from '../helper/init.settings';
 import { TestDataBuilderByDb } from '../helper/test.data.builder.by.db';
-import * as console from 'node:console';
 import { join } from 'path';
 import { deleteAllData } from '../helper/delete.all.data';
 import { INJECT_TOKEN } from '@core/constans/jwt.tokens';
@@ -303,7 +301,6 @@ describe('AuthController (e2e)', () => {
 
             const jwtService = app.get<JwtService>(INJECT_TOKEN.ACCESS_TOKEN);
             const payload = jwtService.verify(accessToken); // <— проверит подпись и вернёт payload
-            console.log(payload);
 
             const responseAbout = await request(app.getHttpServer())
                 .get(join(URL_PATH.auth, AUTH_PATH.aboutMe))

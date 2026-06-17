@@ -1,3 +1,5 @@
+import { Rating } from '@modules/blogging.platform/dto/enum/rating.enum';
+
 export class PostRowViewDto {
     id: number;
     title: string;
@@ -8,5 +10,5 @@ export class PostRowViewDto {
     blogName: string;
     likesCount: number
     dislikesCount: number;
-    myStatus: string | null;
+    myStatus: Rating;
 }

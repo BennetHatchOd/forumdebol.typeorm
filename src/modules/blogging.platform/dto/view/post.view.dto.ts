@@ -25,11 +25,11 @@ export class PostViewDto {
          post: PostRowViewDto,
          likes: NewestLikesViewDto[]
      ): PostViewDto {
-         let  myStatus = Rating.None;
-         if(post.myStatus == "Like")
-             myStatus = Rating.Like;
-         if(post.myStatus == "Dislike")
-             myStatus = Rating.Dislike;
+         // let  myStatus = Rating.None;
+         // if(post.myStatus == "Like")
+         //     myStatus = Rating.Like;
+         // if(post.myStatus == "Dislike")
+         //     myStatus = Rating.Dislike;
         const view = new PostViewDto();
 
         view.id = post.id.toString();
@@ -42,7 +42,7 @@ export class PostViewDto {
         view.extendedLikesInfo = {
             likesCount: post.likesCount,
             dislikesCount: post.dislikesCount,
-            myStatus: myStatus,
+            myStatus: post.myStatus,//myStatus,
             newestLikes: likes
         }
 

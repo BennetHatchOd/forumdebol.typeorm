@@ -4,7 +4,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 
-export class RealObjectBaseDBEntity {
+export abstract class RealObjectBaseDBEntity {
     @PrimaryGeneratedColumn()
     id: number;
 

@@ -3,7 +3,7 @@ import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export enum CommentSortBy {
     CreatedAt = 'createdAt',
-    content = 'content',
+    // content = 'content',
     login = 'userLogin',
 }
 

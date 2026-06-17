@@ -19,12 +19,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Blog } from '@modules/blogging.platform/domain/blog.entity';
 import { Post } from '@modules/blogging.platform/domain/post.entity';
 import { Comment } from '@modules/blogging.platform/domain/comment.entity';
+import { LikeComment } from '@modules/blogging.platform/domain/like.comment.entity';
+import { LikePost } from '@modules/blogging.platform/domain/like.post.entity';
 
 @Module({
     imports: [
         CqrsModule,
         AuthModule,
-        TypeOrmModule.forFeature([Blog, Post, Comment]),
+        TypeOrmModule.forFeature([Blog, Post, Comment, LikeComment, LikePost]),
     ],
     controllers: [
         BlogAdminController,
@@ -42,7 +44,7 @@ import { Comment } from '@modules/blogging.platform/domain/comment.entity';
         PostRepository,
         CommentQueryRepository,
         CommentRepository,
-        // LikeRepository,
+        LikeRepository,
     ],
 })
 export class BloggingPlatformModule {}

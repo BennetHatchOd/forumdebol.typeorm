@@ -1,11 +1,13 @@
 import { Command, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LikeCreateDto } from '@modules/blogging.platform/dto/create/like.create.dto';
 import { LikeRepository } from '@modules/blogging.platform/infrastucture/like.repository';
-import { Like } from '@modules/blogging.platform/domain/like.entity';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { PostRepository } from '@modules/blogging.platform/infrastucture/post.repository';
 import { CommentRepository } from '@modules/blogging.platform/infrastucture/comment.repository';
+import { LikeComment } from '@modules/blogging.platform/domain/like.comment.entity';
+import { LikeBase } from '@modules/blogging.platform/domain/like.base';
+import { LikeFactory } from '@modules/blogging.platform/domain/like.factory';
 
 export class MakeLikeCommand extends Command<void> {
     constructor(public likeDto: LikeCreateDto) {
@@ -38,18 +40,16 @@ export class MakeLikeHandler implements ICommandHandler<MakeLikeCommand> {
                     code: DomainExceptionCode.NotFound,
                 });
         }
-        const foundLike: Like | null =
+
+        let newLike: LikeBase | null =
             await this.likeRepository.findLike(likeDto);
 
-        if (!foundLike) {
-            const newLike: Like = Like.createInstance(likeDto);
-            await this.likeRepository.saveLike(newLike, likeDto.targetType);
-            return;
-        }
-        if (foundLike.status === likeDto.status) return;
+        if (!newLike)
+            newLike = LikeFactory.create(likeDto);
+        else if (newLike.status !== likeDto.status) newLike.status = likeDto.status;
+        else return;
 
-        foundLike.status = likeDto.status;
-        await this.likeRepository.saveLike(foundLike, likeDto.targetType);
+        await this.likeRepository.save(newLike);
         return;
     }
 }

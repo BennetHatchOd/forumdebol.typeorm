@@ -297,8 +297,8 @@ describe('LikePostController (e2e)', () => {
 	 })
 
 		 it('should return a paginator', async() => {
-
-		 let postResponce = await request(app.getHttpServer()).get(join(URL_PATH.blogs,testData.posts[0].blogId.toString(),'posts'))
+		 const y =	 testData.posts[0];
+		 let postResponce = await request(app.getHttpServer()).get(join(URL_PATH.blogs,testData.posts[0].blog.id.toString(),'posts'))
 												 .set("Authorization", 'Bearer ' + testData.accessTokens[2])
 
 

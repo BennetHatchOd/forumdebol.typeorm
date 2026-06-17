@@ -10,7 +10,6 @@ import { UserConfig } from '@src/modules/users-system/config/user.config';
 import { JwtService } from '@nestjs/jwt';
 import { defaultUserConfig } from '../helper/default.user.config';
 import { PostInputDto } from '@modules/blogging.platform/dto/input/post.input.dto';
-import console from 'node:console';
 
 describe('PostController (e2e)', () => {
     let app: INestApplication;
@@ -303,7 +302,6 @@ describe('PostController (e2e)', () => {
                         "string21234567890string21234567890string21234567890",
                     content: "https://google.com"})
                 .expect(HttpStatus.BAD_REQUEST)
-            console.log(response.body.errorsMessages)
             expect(response.body.errorsMessages.length).toBe(2)
             expect(response.body.errorsMessages).toEqual([{
                   message: expect.any(String),

@@ -1,68 +1,41 @@
 import { LikeCreateDto } from '@modules/blogging.platform/dto/create/like.create.dto';
-import { Inject } from '@nestjs/common';
-import { DATA_SOURCE } from '@core/constans/data.source';
-import { DataSource } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { LikeTarget } from '@modules/blogging.platform/dto/enum/like.target.enum';
-import { Like } from '@modules/blogging.platform/domain/like.entity';
+import { LikeBase } from '@modules/blogging.platform/domain/like.base';
+import { InjectEntityManager } from '@nestjs/typeorm';
 
 export class LikeRepository {
     constructor(
-        @Inject(DATA_SOURCE) private dataSource: DataSource
+        @InjectEntityManager() private entityManager: EntityManager
     ) {
     }
 
     async findLike(
         searchDto: LikeCreateDto,
-    ): Promise<Like | null> {
+    ): Promise<LikeBase | null> {
 
         let table: string;
+        let queryBuilder: any;
 
-        searchDto.targetType == LikeTarget.Post
-            ? table = 'like_post'
-            : table = 'like_comment';
-        const searchItem: Like[] = await this.dataSource.query(`
-                    SELECT *
-                    FROM public.${table}
-                    WHERE "targetId" = $1
-                      AND "userId" = $2
-                    LIMIT 1`,
-            [searchDto.targetId, searchDto.userId]
-        );
-        if (searchItem.length == 0)
-            return null;
+        if(searchDto.targetType == LikeTarget.Post) {
+            table = 'like_post';
+            queryBuilder = this.entityManager.createQueryBuilder('LikePost', 'like');
+        }else {
+            table = 'like_comment';
+            queryBuilder = this.entityManager.createQueryBuilder('LikeComment', 'like');
+        }
+        const searchItem = queryBuilder
+            .where(`"targetId" = :targetId AND "userId"= :userId`,
+                { targetId: searchDto.targetId,
+                  userId: searchDto.userId})
+                .getOne();
 
-        return searchItem[0];
+        return searchItem;
     }
 
-    async saveLike(like: Like, target: LikeTarget): Promise<void> {
-        let table: string;
+    async save(like: LikeBase): Promise<void> {
 
-        target == LikeTarget.Post
-            ? table = 'like_post'
-            : table = 'like_comment';
-
-        if(!like.id){
-            const result = await this.dataSource.query(`
-                INSERT INTO public.${table}(
-                    "targetId", "userId", status)
-                VALUES($1, $2, $3)
-                RETURNING id, "createdAt";`,
-                [   like.targetId,
-                    like.userId,
-                    like.status,
-                ])
-            like.id = result[0].id;
-            like.createdAt = result[0].createdAt;
-            return
-        }
-
-        await this.dataSource.query(`UPDATE public.${table}
-        SET
-            status = $1
-        WHERE id = $2;`,
-            [   like.status,
-                like.id,
-            ]);
+        await this.entityManager.save(like);
 
         return;
     }
