@@ -6,8 +6,6 @@ import { PostByBlogInputDto } from '@modules/blogging.platform/dto/input/post.by
 import { Post } from '@modules/blogging.platform/domain/post.entity';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
-import { BlogQueryRepository } from '@modules/blogging.platform/infrastucture/query/blog.query.repository';
-import { BlogRepository } from '@modules/blogging.platform/infrastucture/blog.repository';
 
 export class EditPostCommand extends Command<void> {
     constructor(

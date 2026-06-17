@@ -1,14 +1,10 @@
-import { RealObjectBaseDBEntity } from '@core/domain/real.object.base';
 import {
     Column,
     CreateDateColumn,
-    DeleteDateColumn,
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
-    RelationId,
 } from 'typeorm';
-import { Comment } from '@modules/blogging.platform/domain/comment.entity';
 import { User } from '@modules/users-system/domain/user.entity';
 import { Rating } from '@modules/blogging.platform/dto/enum/rating.enum';
 import { LikeCreateDto } from '@modules/blogging.platform/dto/create/like.create.dto';

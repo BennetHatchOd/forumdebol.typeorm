@@ -5,7 +5,6 @@ import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { PostRepository } from '@modules/blogging.platform/infrastucture/post.repository';
 import { CommentRepository } from '@modules/blogging.platform/infrastucture/comment.repository';
-import { LikeComment } from '@modules/blogging.platform/domain/like.comment.entity';
 import { LikeBase } from '@modules/blogging.platform/domain/like.base';
 import { LikeFactory } from '@modules/blogging.platform/domain/like.factory';
 

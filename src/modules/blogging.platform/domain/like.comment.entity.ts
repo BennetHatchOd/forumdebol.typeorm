@@ -1,5 +1,5 @@
 import { LikeCreateDto } from '@modules/blogging.platform/dto/create/like.create.dto';
-import { Column, Entity, JoinColumn, ManyToOne, RelationId, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
 import { Comment } from '@modules/blogging.platform/domain/comment.entity';
 import { LikeBase } from '@modules/blogging.platform/domain/like.base';
 
