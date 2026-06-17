@@ -140,7 +140,6 @@ export class PostQueryRepository {
             .addGroupBy('p.blogId')
             .addGroupBy('b.name');
 
-        let orderBy: string;
         switch (queryReq.sortBy) {
             case 'title':
             case 'shortDescription':
@@ -159,7 +158,7 @@ export class PostQueryRepository {
                 default:
                     userQueryBuilder = userQueryBuilder
                         .orderBy (`p."${queryReq.sortBy}"`, `${sortDirectionToDb[queryReq.sortDirection]}`)
-        };
+        }
 
         const totalCount: number =
             await userQueryBuilder.getCount()

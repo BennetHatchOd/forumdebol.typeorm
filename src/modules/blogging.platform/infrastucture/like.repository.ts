@@ -14,14 +14,11 @@ export class LikeRepository {
         searchDto: LikeCreateDto,
     ): Promise<LikeBase | null> {
 
-        let table: string;
         let queryBuilder: any;
 
         if(searchDto.targetType == LikeTarget.Post) {
-            table = 'like_post';
             queryBuilder = this.entityManager.createQueryBuilder('LikePost', 'like');
         }else {
-            table = 'like_comment';
             queryBuilder = this.entityManager.createQueryBuilder('LikeComment', 'like');
         }
         const searchItem = queryBuilder

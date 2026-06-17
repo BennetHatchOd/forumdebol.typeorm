@@ -16,7 +16,6 @@ describe('PostController (e2e)', () => {
     let testData: TestDataBuilderByDb;
     let globalPrefix;
     let post;
-    let postByBlog;
 
     beforeAll(async () => {
         const result
@@ -54,13 +53,8 @@ describe('PostController (e2e)', () => {
             content: "content",
             blogId: "1"
         }
-        postByBlog = {
-            title: "title2",
-            shortDescription: "shortDescription2",
-            content: "content2",
-        }
+
         let postId: string;
-        let postId2: string;
         beforeAll(async () => {
             await deleteAllData(app, globalPrefix);
             testData.clearData();
@@ -141,7 +135,7 @@ describe('PostController (e2e)', () => {
                 .delete(join(URL_PATH.blogsAdmin,testData.blogs[0].id!.toString(),'posts', postId))
                 .set("Authorization", testData.authLoginPassword)
                 .expect(HttpStatus.NO_CONTENT)
-            const response = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .get(join(URL_PATH.blogsAdmin,testData.blogs[0].id!.toString(),'posts', postId))
                 .expect(HttpStatus.NOT_FOUND)
         })

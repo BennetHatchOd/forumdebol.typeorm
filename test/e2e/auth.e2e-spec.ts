@@ -300,7 +300,7 @@ describe('AuthController (e2e)', () => {
             const accessToken = response.body.accessToken;
 
             const jwtService = app.get<JwtService>(INJECT_TOKEN.ACCESS_TOKEN);
-            const payload = jwtService.verify(accessToken); // <— проверит подпись и вернёт payload
+            jwtService.verify(accessToken); // <— проверит подпись и вернёт payload
 
             const responseAbout = await request(app.getHttpServer())
                 .get(join(URL_PATH.auth, AUTH_PATH.aboutMe))

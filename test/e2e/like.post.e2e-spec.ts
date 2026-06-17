@@ -297,7 +297,7 @@ describe('LikePostController (e2e)', () => {
 	 })
 
 		 it('should return a paginator', async() => {
-		 const y =	 testData.posts[0];
+
 		 let postResponce = await request(app.getHttpServer()).get(join(URL_PATH.blogs,testData.posts[0].blog.id.toString(),'posts'))
 												 .set("Authorization", 'Bearer ' + testData.accessTokens[2])
 
@@ -341,7 +341,7 @@ describe('LikePostController (e2e)', () => {
 		})
 
 		it('should return 401 if user is not logged in', async() => {
-			const response = await request(app.getHttpServer())
+			await request(app.getHttpServer())
 				.put(join(URL_PATH.posts, testData.posts[0].id.toString(), 'like-status'))
 				.set("Authorization", 'Bearer ' + "ghfgg")
 				.send({likeStatus: Rating.Like })
@@ -349,7 +349,7 @@ describe('LikePostController (e2e)', () => {
 		})
 
 		it('should return 404 if post not exist', async() => {
-			const response = await request(app.getHttpServer())
+			await request(app.getHttpServer())
 				.put(join(URL_PATH.posts, '5346345', 'like-status'))
 				.set("Authorization", 'Bearer ' + testData.accessTokens[0])
 				.send({likeStatus: Rating.Like })
