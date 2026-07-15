@@ -22,6 +22,7 @@ export abstract class LikeBase{
 
     @Column()
     userId: number;
+
     @Column({enum: Rating, type: 'enum', enumName: 'rating_enum' })
     status: Rating;
 

@@ -12,6 +12,7 @@ import { AUTH_PATH, URL_PATH } from '@core/url.path.setting';
 import { DATA_SOURCE } from '@core/constans/data.source';
 import { DataSource } from 'typeorm';
 import { User } from '@modules/users-system/domain/user.entity';
+import { QuestionInputDto } from '@modules/quiz/dto/input/question.input.dto';
 
 export class TestDataBuilderByDb {
     // создаем первоначальное наполнение системы
@@ -174,6 +175,26 @@ export class TestDataBuilderByDb {
         }
     }
 
+    async writeQuestionsToDB(
+        questions: {
+            body: string;
+            correctAnswers: string[];
+            published: boolean;
+        }[],
+    ): Promise<void> {
+        for (const question of questions) {
+            const sql = `
+      INSERT INTO "public"."question" ("body", "correctAnswers", "published")
+      VALUES ($1, $2, $3)
+    `;
+
+            await this.dataSource.query(sql, [
+                question.body,
+                JSON.stringify(question.correctAnswers),
+                question.published,
+            ]);
+        }
+    }
     clearData(){
         this.users = [];
         this.usersPassword = [];

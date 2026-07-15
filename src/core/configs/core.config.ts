@@ -18,6 +18,7 @@ export class CoreConfig {
     })
     port: number;
 
+
     @IsNotEmpty()
     @IsString({
         message: 'Set Env variable DATABASE_USER',

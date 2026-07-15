@@ -69,7 +69,7 @@ describe('BlogController (e2e)', () => {
                 .post(URL_PATH.blogsAdmin)
                 .set("Authorization", testData.authLoginPassword)
                 .send(blog)
-  //              .expect(HttpStatus.CREATED)
+               .expect(HttpStatus.CREATED)
             expect(response.body).toEqual({
                 id: expect.any(String),
                 name: blog.name,

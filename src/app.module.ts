@@ -11,6 +11,7 @@ import { CoreConfig } from '@core/configs/core.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseConfig } from '@core/configs/db.config';
+import { QuizSystemModule } from '@modules/quiz/quiz.module';
 
 @Module({
     imports: [
@@ -22,6 +23,7 @@ import { DatabaseConfig } from '@core/configs/db.config';
         }),
         BloggingPlatformModule,
         UserSystemModule,
+        QuizSystemModule,
         CoreModule,
         NotificationsModule,
     ],

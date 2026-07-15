@@ -26,7 +26,7 @@
     "test:debug": "cross-env NODE_ENV=testing node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "cross-env NODE_ENV=testing jest --config jest-e2e.ts --detectOpenHandles",
     "migration:create": "cross-env NODE_ENV=development && typeorm-ts-node-commonjs migration:create  src/migrations/init",
-    "migration:generate": "cross-env NODE_ENV=development typeorm-ts-node-commonjs migration:generate -d typeorm.config.ts src/migrations/create-comments-tables",
+    "migration:generate": "cross-env NODE_ENV=development typeorm-ts-node-commonjs migration:generate -d typeorm.config.ts src/migrations/create-quiz-tables",
     "migration:run": "cross-env NODE_ENV=development typeorm-ts-node-commonjs migration:run -d typeorm.config.ts",
     "migration:revert": "cross-env NODE_ENV=development typeorm-ts-node-commonjs migration:revert -d typeorm.config.ts"
   },
