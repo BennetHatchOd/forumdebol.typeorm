@@ -126,7 +126,7 @@ describe('BlogController (e2e)', () => {
                 .set("Authorization", testData.authLoginPassword)
                 .send(blog)
                 .expect(HttpStatus.NO_CONTENT)
-            const response = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .get(join(URL_PATH.blogs, blogId))
                 .expect(HttpStatus.NOT_FOUND)
         })

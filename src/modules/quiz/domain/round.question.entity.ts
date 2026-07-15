@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Game } from '@modules/quiz/domain/game.entity';
 import { Question } from '@modules/quiz/domain/question.entity';
 

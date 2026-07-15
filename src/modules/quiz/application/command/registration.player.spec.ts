@@ -14,7 +14,6 @@ import { User } from '@modules/users-system/domain/user.entity';
 
 import { UserConfig } from '@modules/users-system/config/user.config';
 import { StatusGame } from '@modules/quiz/dto/type/status.game.type';
-import { CheckAnswerCommand, CheckAnswerHandler } from '@modules/quiz/application/command/check.answer.usecase';
 import 'dotenv/config';
 import { testDbConfig } from '../../../../../test/test.db.config';
 import { testHelperFillingDb } from '@modules/quiz/application/command/test.helper.filling.db';

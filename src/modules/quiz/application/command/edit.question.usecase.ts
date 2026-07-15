@@ -1,11 +1,9 @@
-
 import { Command, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { QuestionInputDto } from '@modules/quiz/dto/input/question.input.dto';
 import { QuestionRepository } from '@modules/quiz/infrastucture/question.repository';
 import { Question } from '@modules/quiz/domain/question.entity';
-import { UserConfig } from '@modules/users-system/config/user.config';
 
 export class EditQuestionCommand extends Command<void> {
     constructor(

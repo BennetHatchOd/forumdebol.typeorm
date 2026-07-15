@@ -1,7 +1,3 @@
-import { Repository } from 'typeorm';
-import { User } from '@modules/users-system/domain/user.entity';
-import { Question } from '@modules/quiz/domain/question.entity';
-
 export async function testHelperFillingArrays(
     questions: { body: string, correctAnswers: string[], published: boolean}[],
     users: { id: number, login: string, email: string, passwordHash: string}[],

@@ -20,8 +20,6 @@ import { testDbConfig } from '../../../../../test/test.db.config';
 import { testHelperFillingArrays } from '@modules/quiz/application/command/test.helper.filling.arrays';
 import { testHelperFillingDb } from '@modules/quiz/application/command/test.helper.filling.db';
 import { DomainException } from '@core/exceptions/domain.exception';
-import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
-import { RegistrationPlayerCommand } from '@modules/quiz/application/command/registration.player.usecase';
 
 describe('CheckAnswerHandler integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -205,10 +203,10 @@ describe('CheckAnswerHandler integration (DB)', () => {
         for (let i = 0; i < 10; i++) {
             const player: number = order[i];
             if (player === 0) {
-                number: number = numberQuestionPlayer1;
+                number = numberQuestionPlayer1;
                 numberQuestionPlayer1++;
             } else {
-                number: number = numberQuestionPlayer2;
+                number = numberQuestionPlayer2;
                 numberQuestionPlayer2++;
             }
             const answer: string
@@ -252,10 +250,10 @@ describe('CheckAnswerHandler integration (DB)', () => {
         for (let i = 0; i < 10; i++) {
             const player: number = order[i];
             if (player === 0) {
-                number: number = numberQuestionPlayer1;
+                number = numberQuestionPlayer1;
                 numberQuestionPlayer1++;
             } else {
-                number: number = numberQuestionPlayer2;
+                number = numberQuestionPlayer2;
                 numberQuestionPlayer2++;
             }
             const answer: string

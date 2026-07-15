@@ -13,9 +13,9 @@ export async function testHelperFillingDb(
         const result = await userRepo.save(
             userRepo.create(user));
         user.id = result.id;
-    };
+    }
     for (let question of questions) {
         await questionRepo.save(
             questionRepo.create(question));
     }
-};
+}

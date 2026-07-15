@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isDbId } from '@core/is.db.id';
-import { Question } from '@modules/quiz/domain/question.entity';
 import { Game } from '@modules/quiz/domain/game.entity';
 import { StatusGame } from '@modules/quiz/dto/type/status.game.type';
 
@@ -83,8 +82,8 @@ export class QuizRepository {
     // }
     async save(game: Game) {
 
-        const result = await this.quizORMRepo.save(game);
+        await this.quizORMRepo.save(game);
 
-            return;
+        return;
     }
 }

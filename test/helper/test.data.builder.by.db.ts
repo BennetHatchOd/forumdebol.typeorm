@@ -12,7 +12,6 @@ import { AUTH_PATH, URL_PATH } from '@core/url.path.setting';
 import { DATA_SOURCE } from '@core/constans/data.source';
 import { DataSource } from 'typeorm';
 import { User } from '@modules/users-system/domain/user.entity';
-import { QuestionInputDto } from '@modules/quiz/dto/input/question.input.dto';
 
 export class TestDataBuilderByDb {
     // создаем первоначальное наполнение системы
