@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 
-import { QuizRepository } from '@modules/quiz/infrastucture/quiz.repository';
+import { GameRepository } from '@modules/quiz/infrastucture/game.repository';
 import { QuestionRepository } from '@modules/quiz/infrastucture/question.repository';
 
 import { Game } from '@modules/quiz/domain/game.entity';
@@ -13,16 +13,17 @@ import { Question } from '@modules/quiz/domain/question.entity';
 import { User } from '@modules/users-system/domain/user.entity';
 
 import { UserConfig } from '@modules/users-system/config/user.config';
-import { StatusGame } from '@modules/quiz/dto/type/status.game.type';
+import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
 import 'dotenv/config';
 import { testDbConfig } from '../../../../../test/test.db.config';
-import { testHelperFillingDb } from '@modules/quiz/application/command/test.helper.filling.db';
+import { testHelperFillingDb } from '@modules/quiz/application/test.helper.filling.db';
 import {
     RegistrationPlayerCommand,
     RegistrationPlayerHandler,
 } from '@modules/quiz/application/command/registration.player.usecase';
-import { testHelperFillingArrays } from '@modules/quiz/application/command/test.helper.filling.arrays';
+import { testHelperFillingArrays } from '@modules/quiz/application/test.helper.filling.arrays';
 import { DomainException } from '@core/exceptions/domain.exception';
+import { GameViewDto } from '@modules/quiz/dto/view/game.view.dto';
 
 describe('RegistratonPlayerUseCase integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -72,7 +73,7 @@ describe('RegistratonPlayerUseCase integration (DB)', () => {
             ],
             providers: [
                 RegistrationPlayerHandler,
-                QuizRepository,
+                GameRepository,
                 QuestionRepository,
                 {
                     provide: UserConfig,
@@ -136,7 +137,7 @@ describe('RegistratonPlayerUseCase integration (DB)', () => {
     it('should create an active game', async () => {
 
         const gameId1: string = await handler.execute(
-            new RegistrationPlayerCommand(users[0].id.toString()));
+            new RegistrationPlayerCommand(users[2].id.toString()));
 
         const gameId2: string = await handler.execute(
             new RegistrationPlayerCommand(users[1].id.toString()));
@@ -149,11 +150,12 @@ describe('RegistratonPlayerUseCase integration (DB)', () => {
                 playingUsers:{ user: true },
                 roundQuestion:true}}
         );
+        const g = GameViewDto.MapGameToView(games[0])
 
         expect(games).toHaveLength(1);
         expect(games[0].playingUsers).toHaveLength(2);
         expect(games[0].roundQuestion).toHaveLength(5);
-        expect(games[0].playingUsers[0].user.id).toBe(users[0].id);
+        expect(games[0].playingUsers[0].user.id).toBe(users[2].id);
         expect(games[0].playingUsers[1].user.id).toBe(users[1].id);
         expect(games[0].status).toBe(StatusGame.Active);
 

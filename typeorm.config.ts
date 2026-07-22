@@ -13,4 +13,5 @@ export default new DataSource({
     type: 'postgres',
     migrations: ['src/migrations/*.ts'],
     entities: ['src/**/*.entity.ts'],
+    logging:false,
 });

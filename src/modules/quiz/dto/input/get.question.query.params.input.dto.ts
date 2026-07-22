@@ -6,9 +6,11 @@ export enum QuestionSortBy {
     CreatedAt = 'createdAt',
     Id = 'id',
     UpdatedAt = 'updatedAt',
+    Body = 'body',
 }
 
 export class GetQuestionQueryParams extends BaseSortablePaginationParams<QuestionSortBy> {
+    @IsOptional()
     @IsEnum(QuestionSortBy)
     sortBy = QuestionSortBy.CreatedAt;
 

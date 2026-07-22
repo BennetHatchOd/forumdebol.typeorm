@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 
-import { QuizRepository } from '@modules/quiz/infrastucture/quiz.repository';
+import { GameRepository } from '@modules/quiz/infrastucture/game.repository';
 import { QuestionRepository } from '@modules/quiz/infrastucture/question.repository';
 
 import { Game } from '@modules/quiz/domain/game.entity';
@@ -13,12 +13,12 @@ import { Question } from '@modules/quiz/domain/question.entity';
 import { User } from '@modules/users-system/domain/user.entity';
 
 import { UserConfig } from '@modules/users-system/config/user.config';
-import { StatusGame } from '@modules/quiz/dto/type/status.game.type';
+import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
 import { CheckAnswerCommand, CheckAnswerHandler } from '@modules/quiz/application/command/check.answer.usecase';
 import 'dotenv/config';
 import { testDbConfig } from '../../../../../test/test.db.config';
-import { testHelperFillingArrays } from '@modules/quiz/application/command/test.helper.filling.arrays';
-import { testHelperFillingDb } from '@modules/quiz/application/command/test.helper.filling.db';
+import { testHelperFillingArrays } from '@modules/quiz/application/test.helper.filling.arrays';
+import { testHelperFillingDb } from '@modules/quiz/application/test.helper.filling.db';
 import { DomainException } from '@core/exceptions/domain.exception';
 
 describe('CheckAnswerHandler integration (DB)', () => {
@@ -62,7 +62,7 @@ describe('CheckAnswerHandler integration (DB)', () => {
             ],
             providers: [
                 CheckAnswerHandler,
-                QuizRepository,
+                GameRepository,
                 QuestionRepository,
                 {
                     provide: UserConfig,
@@ -200,7 +200,7 @@ describe('CheckAnswerHandler integration (DB)', () => {
         let numberQuestionPlayer1 = 0;
         let numberQuestionPlayer2 = 0;
         let number: number;
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < order.length; i++) {
             const player: number = order[i];
             if (player === 0) {
                 number = numberQuestionPlayer1;
@@ -247,7 +247,7 @@ describe('CheckAnswerHandler integration (DB)', () => {
         let numberQuestionPlayer1 = 0;
         let numberQuestionPlayer2 = 0;
         let number: number;
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < order.length; i++) {
             const player: number = order[i];
             if (player === 0) {
                 number = numberQuestionPlayer1;
@@ -281,4 +281,38 @@ describe('CheckAnswerHandler integration (DB)', () => {
         expect(updatedPlayer0!.score).toBe(0);
         expect(updatedPlayer1!.score).toBe(2);
     });
+
+    it('should return error if user send too many answers.', async () => {
+
+        const order =   [0, 0,  0,  0,  0,  0];
+        const correct = [1, 0,  0,  1,  0,  0];
+
+        let numberQuestionPlayer1 = 0;
+        let numberQuestionPlayer2 = 0;
+        let number: number;
+        for (let i = 0; i < order.length - 1; i++) {
+            const player: number = order[i];
+            if (player === 0) {
+                number = numberQuestionPlayer1;
+                numberQuestionPlayer1++;
+            } else {
+                number = numberQuestionPlayer2;
+                numberQuestionPlayer2++;
+            }
+            const answer: string
+                = correct[i] ? questions[number].correctAnswers[0] : 'hcf';
+            await handler.execute(
+                new CheckAnswerCommand(users[player].id.toString(), {
+                    answer: answer,
+                }),
+            );
+        }
+        await expect(
+            handler.execute(
+                new CheckAnswerCommand(users[0].id.toString(), {
+                    answer: 'gfff'})))
+            .rejects.toBeInstanceOf(DomainException);
+
+    });
+
 });

@@ -8,7 +8,8 @@ export const URL_PATH = {
     testing: '/testing/all-data',
     blogsAdmin: '/sa/blogs',
     usersAdmin: '/sa/users',
-    questions: '/quiz/questions',
+    questions: '/sa/quiz/questions',
+    games: '/pair-game-quiz/pairs',
 
 };
 

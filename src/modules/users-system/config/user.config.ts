@@ -86,7 +86,7 @@ export class UserConfig {
         this.saltRound = Number(this.configService.get('SALT_ROUND'));
         this.timeRateLimiting = Number(this.configService.get('TIME_RATE_LIMITED'));
         this.countRateLimiting = Number(this.configService.get('COUNT_RATE_LIMITED'));
-        this.quizQuestion= this.configService.get('QUIZ_QUESTION');
+        this.quizQuestion= Number(this.configService.get('QUIZ_QUESTION'));
 
         configValidationUtility.validateConfig(this);
     }

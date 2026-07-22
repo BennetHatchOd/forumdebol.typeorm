@@ -18,8 +18,10 @@ import { QuizSystemModule } from '@modules/quiz/quiz.module';
         configModule,
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
-            useFactory: (configService: ConfigService<DatabaseConfig>) =>
-                configService.get('database', { infer: true })!,
+            useFactory: (configService: ConfigService<DatabaseConfig>) => ({
+                ...configService.get('database', { infer: true })!,
+                logging: false,
+            }),
         }),
         BloggingPlatformModule,
         UserSystemModule,

@@ -28,6 +28,7 @@ export class PublishedHandler implements ICommandHandler<PublishedCommand, void>
             code: DomainExceptionCode.NotFound});
 
         question.publish(inputDto.published);
+        question.updatedAt = new Date();
         await this.questionRepository.save(question);
         return;
     }

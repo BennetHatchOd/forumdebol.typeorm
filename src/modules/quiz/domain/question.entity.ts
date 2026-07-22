@@ -1,5 +1,5 @@
 import { RealObjectBaseDBEntity } from '@core/domain/real.object.base';
-import { Column, Entity, UpdateDateColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { QuestionInputDto } from '@modules/quiz/dto/input/question.input.dto';
 import { QuestionFieldRestrict } from '@modules/quiz/dto/field.restrictions';
 import { DomainException } from '@core/exceptions/domain.exception';
@@ -7,7 +7,7 @@ import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 
 @Entity()
 export class Question extends RealObjectBaseDBEntity {
-    @UpdateDateColumn()
+    @Column({default: null})
     updatedAt: Date;
 
     @Column({
@@ -56,6 +56,7 @@ export class Question extends RealObjectBaseDBEntity {
 
         this.body = dto.body;
         this.correctAnswers = dto.correctAnswers;
+        this.updatedAt = new Date();
     }
 
     publish(isPublished: boolean) {

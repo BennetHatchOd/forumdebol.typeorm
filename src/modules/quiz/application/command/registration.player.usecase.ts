@@ -1,12 +1,12 @@
 import { Command, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Question } from '@modules/quiz/domain/question.entity';
 import { QuestionRepository } from '@modules/quiz/infrastucture/question.repository';
-import { QuizRepository } from '@modules/quiz/infrastucture/quiz.repository';
+import { GameRepository } from '@modules/quiz/infrastucture/game.repository';
 import { Game } from '@modules/quiz/domain/game.entity';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { PlayingUser } from '@modules/quiz/domain/playing.user.entity';
-import { StatusGame } from '@modules/quiz/dto/type/status.game.type';
+import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
 
 export class RegistrationPlayerCommand extends Command<string> {
     constructor(public user: string) {
@@ -20,7 +20,7 @@ export class RegistrationPlayerHandler implements ICommandHandler<
     string
 > {
     constructor(
-        private quizRepository: QuizRepository,
+        private quizRepository: GameRepository,
         private questionRepository: QuestionRepository,
     ) {}
 

@@ -1,5 +1,5 @@
 import { Command, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { QuizRepository } from '@modules/quiz/infrastucture/quiz.repository';
+import { GameRepository } from '@modules/quiz/infrastucture/game.repository';
 import { QuestionRepository } from '@modules/quiz/infrastucture/question.repository';
 import { Game } from '@modules/quiz/domain/game.entity';
 import { DomainException } from '@core/exceptions/domain.exception';
@@ -8,9 +8,10 @@ import { AnswerInputDto } from '@modules/quiz/dto/input/answer.input.dto';
 import { UserConfig } from '@modules/users-system/config/user.config';
 import { AnsweredQuestion } from '@modules/quiz/domain/answered.question.entity';
 import { User } from '@modules/users-system/domain/user.entity';
-import { StatusGame } from '@modules/quiz/dto/type/status.game.type';
+import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
+import console from 'node:console';
 
-export class CheckAnswerCommand extends Command<void> {
+export class CheckAnswerCommand extends Command<string> {
     constructor(
         public userId: string,
         public inputDto: AnswerInputDto,
@@ -24,20 +25,21 @@ export class CheckAnswerHandler implements ICommandHandler<
     CheckAnswerCommand>
 {
     constructor(
-        private quizRepository: QuizRepository,
-        private questionRepository: QuestionRepository,
+        private quizRepository: GameRepository,
         private readonly userConfig: UserConfig,
     ) {}
 
-    async execute({ userId, inputDto }: CheckAnswerCommand): Promise<void> {
+    async execute({ userId, inputDto }: CheckAnswerCommand): Promise<string> {
         // check active game of user
         const activeGame: Game | null =
             await this.quizRepository.findActive(userId);
-        if (!activeGame)
+        if (!activeGame){
             throw new DomainException({
                 message: "current user isn't participating in active pair",
                 code: DomainExceptionCode.Forbidden,
             });
+        }
+        activeGame.roundQuestion.sort((a,b) => a.id - b.id);
         // check not answered question
         const indexPlayer = activeGame.playingUsers.findIndex(
             (player) => player.user.id == +userId,
@@ -70,23 +72,25 @@ export class CheckAnswerHandler implements ICommandHandler<
 
         if (
             activeGame.playingUsers[indexPlayer].numberQuestion
-            < this.userConfig.quizQuestion) {
+            < this.userConfig.quizQuestion)
+        {
             await this.quizRepository.save(activeGame);
-            return;
+            return activeGame.answeredQuestion.at(-1)!.id.toString();
         }
 
-            if (
+        if (
             activeGame.playingUsers[1 - indexPlayer].numberQuestion >=
-                this.userConfig.quizQuestion
-        ) {
+                this.userConfig.quizQuestion)
+        {
             activeGame.status = StatusGame.Finished;
-            await this.quizRepository.save(activeGame);
-            return;
+            activeGame.finishAt = new Date();
+            // add final score
+            if(activeGame.playingUsers[1 - indexPlayer].score > 0)
+                activeGame.playingUsers[1 - indexPlayer].score++;
         }
-        if(activeGame.playingUsers[indexPlayer].score > 0)
-            activeGame.playingUsers[indexPlayer].score++;
+
         await this.quizRepository.save(activeGame);
-        return;
+        return activeGame.answeredQuestion.at(-1)!.id.toString();
 
     }
 }

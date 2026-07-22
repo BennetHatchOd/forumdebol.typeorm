@@ -66,7 +66,7 @@ describe('QuestionController (e2e)', () => {
                 correctAnswers: question.correctAnswers,
                 "published": false,
                 createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                updatedAt: null,
             })
             questionId = response.body.id;
         });
@@ -82,7 +82,7 @@ describe('QuestionController (e2e)', () => {
                 correctAnswers: question.correctAnswers,
                 "published": false,
                 createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                updatedAt: null,
             })
         })
 
@@ -234,7 +234,7 @@ describe('QuestionController (e2e)', () => {
                 body: questions.at(-1)!.body,
                 correctAnswers: questions.at(-1)!.correctAnswers,
                 createdAt: expect.any(String),
-                updatedAt: expect.any(String),
+                updatedAt: null,
                 published: questions.at(-1)!.published
             })
 

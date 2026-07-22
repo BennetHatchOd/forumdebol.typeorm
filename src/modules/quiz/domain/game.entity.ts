@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { StatusGame } from '@modules/quiz/dto/type/status.game.type';
+import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
 import { AnsweredQuestion } from '@modules/quiz/domain/answered.question.entity';
 import { PlayingUser } from '@modules/quiz/domain/playing.user.entity';
 import { RoundQuestion } from '@modules/quiz/domain/round.question.entity';
@@ -18,6 +18,9 @@ export class Game {
         enumName: 'status_game',
     })
     status: StatusGame;
+
+    @Column({default: null})
+    finishAt: Date;
 
     @OneToMany(() => AnsweredQuestion, (usingQuestion) => usingQuestion.game, {nullable: true, cascade: ['insert', 'update'],})
     answeredQuestion: AnsweredQuestion[];
