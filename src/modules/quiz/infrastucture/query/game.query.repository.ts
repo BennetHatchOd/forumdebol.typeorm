@@ -9,51 +9,60 @@ import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { AnsweredQuestion } from '@modules/quiz/domain/answered.question.entity';
 import { GameViewDto } from '@modules/quiz/dto/view/game.view.dto';
 import { AnswerViewDto } from '@modules/quiz/dto/view/answer.view.dto';
+import { MyStatisticViewDto } from '@modules/quiz/dto/view/my.statistic.view.dto';
+import { MyStatisticRawDto } from '@modules/quiz/dto/my.statistic.raw.dto';
 
 @Injectable()
 export class GameQueryRepository {
     constructor(
-        @InjectRepository(Game) private quizORMRepo: Repository<Game>,
-        @InjectRepository(AnsweredQuestion) private answerORMRepo: Repository<AnsweredQuestion>,
+        @InjectRepository(Game) private gameORMRepo: Repository<Game>,
+        @InjectRepository(AnsweredQuestion)
+        private answerORMRepo: Repository<AnsweredQuestion>,
     ) {}
 
-    async findUnFinished(userId: string): Promise<GameViewDto|null> {
+    async findUnFinished(userId: string): Promise<GameViewDto | null> {
         const idDB = isDbId(userId);
         if (!idDB) return null;
 
-        const game = await this.quizORMRepo
+        const game = await this.gameORMRepo
             .createQueryBuilder('game')
             .leftJoinAndSelect('game.answeredQuestion', 'answeredQuestion')
             .leftJoinAndSelect('answeredQuestion.game', 'answeredQuestionGame')
             .leftJoinAndSelect('answeredQuestion.user', 'answeredQuestionUser')
-            .leftJoinAndSelect('answeredQuestion.question', 'answeredQuestionQuestion')
+            .leftJoinAndSelect(
+                'answeredQuestion.question',
+                'answeredQuestionQuestion',
+            )
             .leftJoinAndSelect('game.roundQuestion', 'roundQuestion')
-            .leftJoinAndSelect('roundQuestion.question', 'roundQuestionQuestion')
+            .leftJoinAndSelect(
+                'roundQuestion.question',
+                'roundQuestionQuestion',
+            )
             .leftJoinAndSelect('game.playingUsers', 'playingUsers')
             .leftJoinAndSelect('playingUsers.user', 'user')
             .where('game.status != :status', { status: StatusGame.Finished })
-            .andWhere(qb => {
+            .andWhere((qb) => {
                 const subQuery = qb
                     .subQuery()
                     .select('g.id')
                     .from(Game, 'g')
                     .leftJoin('g.playingUsers', 'pu')
                     .leftJoin('pu.user', 'u')
-                    .where('g.status != :status', { status: StatusGame.Finished })
+                    .where('g.status != :status', {
+                        status: StatusGame.Finished,
+                    })
                     .andWhere('u.id = :idDB', { idDB })
                     .getQuery();
                 return 'game.id IN ' + subQuery;
             })
             .getOne();
 
-        if (!game)
-            return null;
+        if (!game) return null;
         return GameViewDto.MapGameToView(game);
     }
 
     async findById(id: number): Promise<GameViewDto> {
-
-        const game: Game | null = await this.quizORMRepo.findOne({
+        const game: Game | null = await this.gameORMRepo.findOne({
             where: {
                 id: id,
             },
@@ -71,44 +80,60 @@ export class GameQueryRepository {
                 },
             },
         });
-if (!game)
-    throw  new DomainException({
-        message: 'game not found',
-        code: DomainExceptionCode.NotFound,
-    });
-    return GameViewDto.MapGameToView(game);
+        if (!game)
+            throw new DomainException({
+                message: 'game not found',
+                code: DomainExceptionCode.NotFound,
+            });
+        return GameViewDto.MapGameToView(game);
     }
 
-    async findAnswerById(id: string): Promise<AnswerViewDto|null> {
+    async findAnswerById(id: string): Promise<AnswerViewDto | null> {
         const idDB = isDbId(id);
         if (!idDB) return null;
 
-        const answers = await this.answerORMRepo.findOne({where:{id: idDB},relations: {question:true}});
+        const answers = await this.answerORMRepo.findOne({
+            where: { id: idDB },
+            relations: { question: true },
+        });
         if (!answers) return null;
 
         return AnswerViewDto.MapToView(answers);
     }
-    // async existsById(id: string): Promise<boolean> {
-    //     const idDB = isDbId(id);
-    //     if (!idDB) return false;
-    //
-    //     const result = await this.questionORMRepo.existsBy({ id: idDB });
-    //
-    //     return result;
-    // }
-    //
 
-    //
-    // async delete(question: Question): Promise<void> {
-    //     await this.questionORMRepo.softRemove(question);
-    //     return;
-    // }
     async save(game: Game) {
-
-        await this.quizORMRepo.save(game);
+        await this.gameORMRepo.save(game);
 
         return;
     }
 
-
+    async getMyStatistic(userId: string): Promise<MyStatisticRawDto[]> {
+        const games = await this.gameORMRepo
+            .createQueryBuilder('g')
+            .select([
+                'g.id AS "gameId"',
+                'pu.userId AS "userId"',
+                'pu.score AS score',
+            ])
+            .leftJoin('g.playingUsers', 'pu')
+            .where((qb) => {
+                const subQuery = qb
+                    .subQuery()
+                    .select('g2.id')
+                    .from(Game, 'g2')
+                    .innerJoin(
+                        'g2.playingUsers',
+                        'pu2',
+                        'pu2.userId = :userId',
+                        { userId: +userId },
+                    )
+                    .where('g2.status = :status', {
+                        status: StatusGame.Finished,
+                    })
+                    .getQuery();
+                return 'g.id IN ' + subQuery;
+            })
+            .getRawMany();
+        return games;
+    }
 }

@@ -60,7 +60,8 @@ export class CommonGameTestingHelper {
 
     async initialization(){
     // create active game without answers
-
+        this.player1--;
+        this.player2--;
         // create game
         if (!CommonGameTestingHelper.isDBcreated){
             this.fillingArray();

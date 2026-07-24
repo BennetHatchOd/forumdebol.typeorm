@@ -16,6 +16,8 @@ import { CheckAnswerCommand } from '@modules/quiz/application/command/check.answ
 import console from 'node:console';
 import { AnswerViewDto } from '@modules/quiz/dto/view/answer.view.dto';
 import { GetAnswerQuery } from '@modules/quiz/application/query/get.answer.query';
+import { MyStatisticViewDto } from '@modules/quiz/dto/view/my.statistic.view.dto';
+import { GetMyStatisticQuery } from '@modules/quiz/application/query/get.my.statistic.query';
 
 @Controller(URL_PATH.games)
 export class GameController {
@@ -24,7 +26,7 @@ export class GameController {
         private queryBus: QueryBus,
     ){}
 
-    @Get('my-current')
+    @Get('pairs/my-current')
     @UseGuards(AuthGuard('jwt'))
     async myCurrentGame(
         @CurrentUserId() user: string,
@@ -34,7 +36,7 @@ export class GameController {
 
     }
 
-    @Get(':id')
+    @Get('pairs/:id')
     @UseGuards(AuthGuard('jwt'))
     async getGameById(
         @CurrentUserId() user: string,
@@ -44,7 +46,7 @@ export class GameController {
         return this.queryBus.execute(new GetGameByIdQuery(id, user));
     }
 
-    @Post('connection')
+    @Post('pairs/connection')
     @HttpCode(200)
     @UseGuards(AuthGuard('jwt'))
     async createGame(
@@ -56,7 +58,16 @@ export class GameController {
 
     }
 
-    @Post('my-current/answers')
+    @Get('users/my-statistic')
+    @UseGuards(AuthGuard('jwt'))
+    async getStatistic(
+        @CurrentUserId() user: string,
+   ): Promise<MyStatisticViewDto> {
+
+        return this.queryBus.execute(new GetMyStatisticQuery(user));
+    }
+
+    @Post('pairs/my-current/answers')
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(200)
     async sendAnswer(
@@ -66,8 +77,6 @@ export class GameController {
 
         const answerId = await this.commandBus.execute(new CheckAnswerCommand(user, answer));
         const view = await this.queryBus.execute(new GetAnswerQuery(answerId));
-        console.log('----------------------------------------------------')
-        console.log('user = ', user, 'view = ', view)
         return view;
     }
 }

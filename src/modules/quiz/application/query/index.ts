@@ -3,6 +3,7 @@ import { GetAllQuestionHandler } from '@modules/quiz/application/query/get.all.q
 import { GetGameByIdHandler } from '@modules/quiz/application/query/get.game.by.id.query';
 import { GetUserCurrentGameHandler } from '@modules/quiz/application/query/get.user.current.game.query';
 import { GetAnswerHandler } from '@modules/quiz/application/query/get.answer.query';
+import { GetMyStatisticHandler } from '@modules/quiz/application/query/get.my.statistic.query';
 
 export const QueryHandlers = [
     GetQuestionHandler,
@@ -10,4 +11,5 @@ export const QueryHandlers = [
     GetGameByIdHandler,
     GetUserCurrentGameHandler,
     GetAnswerHandler,
+    GetMyStatisticHandler,
 ];

@@ -9,8 +9,7 @@ export const URL_PATH = {
     blogsAdmin: '/sa/blogs',
     usersAdmin: '/sa/users',
     questions: '/sa/quiz/questions',
-    games: '/pair-game-quiz/pairs',
-
+    games: '/pair-game-quiz',
 };
 
 export const AUTH_PATH = {
