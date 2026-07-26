@@ -8,6 +8,7 @@ import { UserConfig } from '@modules/users-system/config/user.config';
 import { AnsweredQuestion } from '@modules/quiz/domain/answered.question.entity';
 import { User } from '@modules/users-system/domain/user.entity';
 import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
+import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
 
 export class CheckAnswerCommand extends Command<string> {
     constructor(
@@ -85,10 +86,60 @@ export class CheckAnswerHandler implements ICommandHandler<
             // add final score
             if(activeGame.playingUsers[1 - indexPlayer].score > 0)
                 activeGame.playingUsers[1 - indexPlayer].score++;
+            await this.calculationStatistics(
+                activeGame.playingUsers[0].user.id, activeGame.playingUsers[0].score,
+                activeGame.playingUsers[1].user.id, activeGame.playingUsers[1].score)
         }
 
         await this.quizRepository.save(activeGame);
         return activeGame.answeredQuestion.at(-1)!.id.toString();
 
+    }
+
+    async calculationStatistics(userFirst: number, scoreFirst: number, userSecond: number, scoreSecond: number): Promise<void> {
+        let userFirstStatistics: StatisticsUser;
+        let userSecondStatistics: StatisticsUser;
+        const statistics: StatisticsUser[] = await this.quizRepository.findStatistics([userFirst, userSecond]);
+
+        if(statistics.length == 0){
+            userFirstStatistics = StatisticsUser.create(userFirst);
+            userSecondStatistics = StatisticsUser.create(userSecond);
+        }else if(statistics.length == 1){
+            if(statistics[0].user.id == userFirst) {
+                userFirstStatistics = statistics[0];
+                userSecondStatistics = StatisticsUser.create(userSecond);
+            }
+            else{
+                userFirstStatistics = StatisticsUser.create(userFirst);
+                userSecondStatistics = statistics[0];
+            }
+        }else{
+            if(statistics[0].user.id == userFirst) {
+                userFirstStatistics = statistics[0];
+                userSecondStatistics = statistics[1];
+            }
+            else{
+                userFirstStatistics = statistics[1];
+                userSecondStatistics = statistics[0];
+            }
+        }
+
+        if(scoreFirst > scoreSecond){
+            userFirstStatistics!.win(scoreFirst);
+            userSecondStatistics!.loss(scoreSecond);
+        }
+
+        if(scoreFirst < scoreSecond){
+            userFirstStatistics!.loss(scoreFirst);
+            userSecondStatistics!.win(scoreSecond);
+        }
+
+        if(scoreFirst == scoreSecond){
+            userFirstStatistics!.draw(scoreFirst);
+            userSecondStatistics!.draw(scoreSecond);
+        }
+
+        await this.quizRepository.saveStatistics(userFirstStatistics!);
+        await this.quizRepository.saveStatistics(userSecondStatistics!);
     }
 }

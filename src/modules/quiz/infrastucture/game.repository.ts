@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isDbId } from '@core/is.db.id';
 import { Game } from '@modules/quiz/domain/game.entity';
 import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
+import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
 
 @Injectable()
 export class GameRepository {
     constructor(
         @InjectRepository(Game) private quizORMRepo: Repository<Game>,
+        @InjectRepository(StatisticsUser) private statisticsORMRepo: Repository<StatisticsUser>,
     ) {}
 
     async findActive(userId: string): Promise<Game | null> {
@@ -85,5 +87,24 @@ export class GameRepository {
         await this.quizORMRepo.save(game);
 
         return;
+    }
+
+    async saveStatistics(statisticsUser: StatisticsUser) {
+
+        await this.statisticsORMRepo.save(statisticsUser);
+    }
+
+    async findStatistics(ids: number[]):Promise<StatisticsUser[]> {
+
+        return  this.statisticsORMRepo.find({
+            where: {
+                user: {
+                    id: In(ids),
+                },
+            },
+            relations: {
+                user: true,
+            },
+        });
     }
 }

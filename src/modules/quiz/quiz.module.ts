@@ -14,10 +14,11 @@ import { RoundQuestion } from '@modules/quiz/domain/round.question.entity';
 import { GameQueryRepository } from '@modules/quiz/infrastucture/query/game.query.repository';
 import { GameRepository } from '@modules/quiz/infrastucture/game.repository';
 import { UserConfig } from '@modules/users-system/config/user.config';
+import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
 
 @Module({
     imports: [
-         TypeOrmModule.forFeature([Question, Game, AnsweredQuestion, PlayingUser, RoundQuestion]),
+         TypeOrmModule.forFeature([Question, Game, AnsweredQuestion, PlayingUser, RoundQuestion, StatisticsUser]),
     ],
     controllers: [
         QuestionController,
