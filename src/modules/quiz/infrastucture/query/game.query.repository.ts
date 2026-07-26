@@ -7,9 +7,8 @@ import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { AnsweredQuestion } from '@modules/quiz/domain/answered.question.entity';
-import { GameViewDto } from '@modules/quiz/dto/view/game.view.dto';
+import { GamePairViewDto } from '@modules/quiz/dto/view/game.pair.view.dto';
 import { AnswerViewDto } from '@modules/quiz/dto/view/answer.view.dto';
-import { MyStatisticViewDto } from '@modules/quiz/dto/view/my.statistic.view.dto';
 import { MyStatisticRawDto } from '@modules/quiz/dto/my.statistic.raw.dto';
 
 @Injectable()
@@ -20,7 +19,7 @@ export class GameQueryRepository {
         private answerORMRepo: Repository<AnsweredQuestion>,
     ) {}
 
-    async findUnFinished(userId: string): Promise<GameViewDto | null> {
+    async findUnFinished(userId: string): Promise<GamePairViewDto | null> {
         const idDB = isDbId(userId);
         if (!idDB) return null;
 
@@ -58,10 +57,10 @@ export class GameQueryRepository {
             .getOne();
 
         if (!game) return null;
-        return GameViewDto.MapGameToView(game);
+        return GamePairViewDto.MapGameToView(game);
     }
 
-    async findById(id: number): Promise<GameViewDto> {
+    async findById(id: number): Promise<GamePairViewDto> {
         const game: Game | null = await this.gameORMRepo.findOne({
             where: {
                 id: id,
@@ -85,7 +84,7 @@ export class GameQueryRepository {
                 message: 'game not found',
                 code: DomainExceptionCode.NotFound,
             });
-        return GameViewDto.MapGameToView(game);
+        return GamePairViewDto.MapGameToView(game);
     }
 
     async findAnswerById(id: string): Promise<AnswerViewDto | null> {

@@ -23,7 +23,6 @@ import {
 } from '@modules/quiz/application/command/registration.player.usecase';
 import { testHelperFillingArrays } from '@modules/quiz/application/test.helper.filling.arrays';
 import { DomainException } from '@core/exceptions/domain.exception';
-import { GameViewDto } from '@modules/quiz/dto/view/game.view.dto';
 
 describe('RegistratonPlayerUseCase integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -38,7 +37,7 @@ describe('RegistratonPlayerUseCase integration (DB)', () => {
     let roundQuestionRepo: Repository<RoundQuestion>;
 
     let users: { id: number, login: string, email: string, passwordHash: string}[] = [];
-    let questions:{ body: string, correctAnswers: string[], published: boolean}[] = [];
+    let questions:{ id: number, body: string, correctAnswers: string[], published: boolean}[] = [];
 
     beforeAll(async () => {
         moduleRef = await Test.createTestingModule({
@@ -150,7 +149,7 @@ describe('RegistratonPlayerUseCase integration (DB)', () => {
                 playingUsers:{ user: true },
                 roundQuestion:true}}
         );
-        const g = GameViewDto.MapGameToView(games[0])
+
 
         expect(games).toHaveLength(1);
         expect(games[0].playingUsers).toHaveLength(2);

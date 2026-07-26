@@ -13,11 +13,9 @@ import { Question } from '@modules/quiz/domain/question.entity';
 import { User } from '@modules/users-system/domain/user.entity';
 
 import { UserConfig } from '@modules/users-system/config/user.config';
-import { CheckAnswerCommand, CheckAnswerHandler } from '@modules/quiz/application/command/check.answer.usecase';
+import { CheckAnswerHandler } from '@modules/quiz/application/command/check.answer.usecase';
 import 'dotenv/config';
 import { testDbConfig } from '../../../../../test/test.db.config';
-import { testHelperFillingArrays } from '@modules/quiz/application/test.helper.filling.arrays';
-import { testHelperFillingDb } from '@modules/quiz/application/test.helper.filling.db';
 import { GetGameByIdHandler } from '@modules/quiz/application/query/get.game.by.id.query';
 import { GameQueryRepository } from '@modules/quiz/infrastucture/query/game.query.repository';
 import {
@@ -45,9 +43,6 @@ describe('Command- and Query- Handlers integration (DB)', () => {
     let answeredQuestionRepo: Repository<AnsweredQuestion>;
     let roundQuestionRepo: Repository<RoundQuestion>;
 
-    let users: { id: number, login: string, email: string, passwordHash: string}[] = [];
-    let questions:{ id: number,  body: string, correctAnswers: string[], published: boolean}[] = [];
-    let game: Game;
     let game23_1, game42_2, game03_3, game16_4, game51_5;
 
     beforeAll(async () => {
@@ -125,7 +120,7 @@ describe('Command- and Query- Handlers integration (DB)', () => {
         const order =   [0, 1,  1,  0,  0,  1,  0,  1,  0, 1];
         const correct = [1, 1,  0,  0,  1,  0,  0,  1,  0, 0];
 
-        game23_1 = new CommonGameTestingHelper(2,3,
+        game23_1 = new CommonGameTestingHelper(3,4,
             checkAnswerHandler, registrationPlayerHandler,
             getUserCurrentGameHandler,getGameByIdHandler, userRepo, questionRepo);
 
@@ -139,12 +134,11 @@ describe('Command- and Query- Handlers integration (DB)', () => {
 
     it('should create second game ', async () => {
 
-        game42_2 = new CommonGameTestingHelper(4,2,
+        game42_2 = new CommonGameTestingHelper(5,3,
             checkAnswerHandler, registrationPlayerHandler,
             getUserCurrentGameHandler,getGameByIdHandler, userRepo, questionRepo);
 
         await game42_2.initialization();
-        const view = await game42_2.getView();
 
     });
     it('should create third game', async () => {
@@ -152,13 +146,12 @@ describe('Command- and Query- Handlers integration (DB)', () => {
         const order =   [0];
         const correct = [1];
 
-        game03_3 = new CommonGameTestingHelper(0,3,
+        game03_3 = new CommonGameTestingHelper(1,4,
             checkAnswerHandler, registrationPlayerHandler,
             getUserCurrentGameHandler,getGameByIdHandler, userRepo, questionRepo);
 
         await game03_3.initialization();
         await game03_3.step(order,correct);
-        const view = await game03_3.getView();
 
     });
     it('should create fourth game and finish it', async () => {
@@ -166,7 +159,7 @@ describe('Command- and Query- Handlers integration (DB)', () => {
         const order =   [0, 1,  1,  0,  0,  1,  0,  1,  1, 0];
         const correct = [1, 1,  1,  0,  1,  1,  0,  1,  1, 0];
 
-        game16_4 = new CommonGameTestingHelper(1,6,
+        game16_4 = new CommonGameTestingHelper(2,7,
             checkAnswerHandler, registrationPlayerHandler,
             getUserCurrentGameHandler,getGameByIdHandler, userRepo, questionRepo);
 
@@ -182,7 +175,7 @@ describe('Command- and Query- Handlers integration (DB)', () => {
         const order =   [1, 1,  1,  0];
         const correct = [1, 1,  0,  0];
 
-        game51_5 = new CommonGameTestingHelper(5,1,
+        game51_5 = new CommonGameTestingHelper(6,2,
             checkAnswerHandler, registrationPlayerHandler,
             getUserCurrentGameHandler,getGameByIdHandler, userRepo, questionRepo);
 
@@ -200,10 +193,6 @@ describe('Command- and Query- Handlers integration (DB)', () => {
         const correct = [1, 1,  0,  0];
         await game42_2.step(order,correct);
         await game03_3.step(order,correct);
-
-        // const view = await game51_5.getView();
-        // expect(view.firstPlayerProgress.score).toBe(0)
-        // expect(view.secondPlayerProgress!.score).toBe(2)
 
     });
 

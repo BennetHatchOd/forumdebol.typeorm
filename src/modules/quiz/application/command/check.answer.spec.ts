@@ -34,7 +34,7 @@ describe('CheckAnswerHandler integration (DB)', () => {
     let roundQuestionRepo: Repository<RoundQuestion>;
 
     let users: { id: number, login: string, email: string, passwordHash: string}[] = [];
-    let questions:{ body: string, correctAnswers: string[], published: boolean}[] = [];
+    let questions:{ id: number, body: string, correctAnswers: string[], published: boolean}[] = [];
     let game: Game;
 
     beforeAll(async () => {

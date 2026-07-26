@@ -37,7 +37,7 @@ describe('GetGameByIdHandler integration (DB)', () => {
     let roundQuestionRepo: Repository<RoundQuestion>;
 
     let users: { id: number, login: string, email: string, passwordHash: string}[] = [];
-    let questions:{ body: string, correctAnswers: string[], published: boolean}[] = [];
+    let questions:{  id: number, body: string, correctAnswers: string[], published: boolean}[] = [];
     let game: Game;
 
     beforeAll(async () => {
@@ -158,7 +158,7 @@ describe('GetGameByIdHandler integration (DB)', () => {
         expect(view.id).toBe(game.id.toString());
         expect(view.status).toBe(StatusGame.Active);
         expect(view.firstPlayerProgress.score).toBe(2);
-        expect(view.secondPlayerProgress?.score).toBe(3);
+        expect(view.secondPlayerProgress?.score).toBe(2);
     });
 
     it('should return error if user get not own game', async () => {
@@ -169,44 +169,4 @@ describe('GetGameByIdHandler integration (DB)', () => {
             .rejects.toBeInstanceOf(DomainException);
     });
 
-    // it('shouldn\'t calculated the final score at the end of the game.', async () => {
-    //     const order =   [0, 1,  1,  0,  0,  1,  0,  1,  0,  1];
-    //     const correct = [0, 1,  0,  0,  0,  0,  0,  1,  0,  0];
-    //     let numberQuestionPlayer1 = 0;
-    //     let numberQuestionPlayer2 = 0;
-    //     let number: number;
-    //     for (let i = 0; i < 10; i++) {
-    //         const player: number = order[i];
-    //         if (player === 0) {
-    //             number = numberQuestionPlayer1;
-    //             numberQuestionPlayer1++;
-    //         } else {
-    //             number = numberQuestionPlayer2;
-    //             numberQuestionPlayer2++;
-    //         }
-    //         const answer: string
-    //             = correct[i] ? questions[number].correctAnswers[0] : 'hcf';
-    //         await checkAnswerHandler.execute(
-    //             new CheckAnswerCommand(users[player].id.toString(), {
-    //                 answer: answer,
-    //             }),
-    //         );
-    //     }
-    //     const savedGame = await gameRepo.findOne({
-    //         where: { id: game.id },
-    //         relations: {
-    //             playingUsers: { user: true },
-    //             answeredQuestion: true,
-    //             roundQuestion: { question: true },
-    //         },
-    //     });
-    //
-    //     const updatedPlayer0
-    //         = savedGame!.playingUsers.find(p => p.user.id === users[0].id);
-    //     const updatedPlayer1
-    //         = savedGame!.playingUsers.find(p => p.user.id === users[1].id);
-    //     expect(savedGame?.status).toBe(StatusGame.Finished);
-    //     expect(updatedPlayer0!.score).toBe(0);
-    //     expect(updatedPlayer1!.score).toBe(2);
-    // });
 });

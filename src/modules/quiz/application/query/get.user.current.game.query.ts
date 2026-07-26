@@ -1,11 +1,10 @@
 import { IQueryHandler, Query, QueryHandler } from '@nestjs/cqrs';
-import { GameViewDto } from '@modules/quiz/dto/view/game.view.dto';
-import { Game } from '@modules/quiz/domain/game.entity';
+import { GamePairViewDto } from '@modules/quiz/dto/view/game.pair.view.dto';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { GameQueryRepository } from '@modules/quiz/infrastucture/query/game.query.repository';
 
-export class GetUserCurrentGameQuery extends Query<GameViewDto> {
+export class GetUserCurrentGameQuery extends Query<GamePairViewDto> {
     constructor(
         public readonly userId: string,
     ) {
@@ -18,9 +17,9 @@ export class GetUserCurrentGameHandler implements IQueryHandler<GetUserCurrentGa
         private gameQueryRepository: GameQueryRepository,
     ) {}
 
-    async execute({userId}: GetUserCurrentGameQuery):Promise<GameViewDto> {
+    async execute({userId}: GetUserCurrentGameQuery):Promise<GamePairViewDto> {
 
-        const activeGame: GameViewDto | null = await this.gameQueryRepository.findUnFinished(userId);
+        const activeGame: GamePairViewDto | null = await this.gameQueryRepository.findUnFinished(userId);
         if (!activeGame)
             throw  new DomainException({
                 message: 'no active pair for current user',

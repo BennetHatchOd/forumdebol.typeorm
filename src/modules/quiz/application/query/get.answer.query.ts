@@ -1,6 +1,4 @@
 import { IQueryHandler, Query, QueryHandler } from '@nestjs/cqrs';
-import { QuestionViewDto } from '@modules/quiz/dto/view/question.view.dto';
-import { QuestionQueryRepository } from '@modules/quiz/infrastucture/query/question.query.repository';
 import { AnswerViewDto } from '@modules/quiz/dto/view/answer.view.dto';
 import { GameQueryRepository } from '@modules/quiz/infrastucture/query/game.query.repository';
 

@@ -13,15 +13,13 @@ import { Question } from '@modules/quiz/domain/question.entity';
 import { User } from '@modules/users-system/domain/user.entity';
 
 import { UserConfig } from '@modules/users-system/config/user.config';
-import { CheckAnswerCommand, CheckAnswerHandler } from '@modules/quiz/application/command/check.answer.usecase';
+import { CheckAnswerHandler } from '@modules/quiz/application/command/check.answer.usecase';
 import 'dotenv/config';
 import { testDbConfig } from '../../../../../test/test.db.config';
-import { testHelperFillingArrays } from '@modules/quiz/application/test.helper.filling.arrays';
-import { testHelperFillingDb } from '@modules/quiz/application/test.helper.filling.db';
 import { GetGameByIdHandler } from '@modules/quiz/application/query/get.game.by.id.query';
 import { GameQueryRepository } from '@modules/quiz/infrastucture/query/game.query.repository';
 import {
-    GetUserCurrentGameHandler, GetUserCurrentGameQuery,
+    GetUserCurrentGameHandler
 } from '@modules/quiz/application/query/get.user.current.game.query';
 import {
     RegistrationPlayerHandler,
@@ -62,7 +60,7 @@ describe('GetMyStatisticHandler integration (DB)', () => {
                     entities: [Game, PlayingUser, AnsweredQuestion, RoundQuestion, Question, User],
                     synchronize: true,
                     dropSchema: true,
-                    logging: true,
+                    logging: false,
                 }),
                 TypeOrmModule.forFeature([
                     Game,

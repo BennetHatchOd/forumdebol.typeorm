@@ -1,8 +1,4 @@
 import { IQueryHandler, Query, QueryHandler } from '@nestjs/cqrs';
-import { GameViewDto } from '@modules/quiz/dto/view/game.view.dto';
-import { Game } from '@modules/quiz/domain/game.entity';
-import { DomainException } from '@core/exceptions/domain.exception';
-import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { GameQueryRepository } from '@modules/quiz/infrastucture/query/game.query.repository';
 import { MyStatisticViewDto } from '@modules/quiz/dto/view/my.statistic.view.dto';
 import { MyStatisticRawDto } from '@modules/quiz/dto/my.statistic.raw.dto';

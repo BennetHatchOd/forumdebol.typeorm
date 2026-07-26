@@ -3,7 +3,7 @@ import { Game } from '@modules/quiz/domain/game.entity';
 import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
 import console from 'node:console';
 
-export class GameViewDto {
+export class GamePairViewDto {
     id: string;
     firstPlayerProgress: {
         answers:
@@ -41,8 +41,8 @@ export class GameViewDto {
     startGameDate: string | null = null;
     finishGameDate: string | null = null;
 
-    static MapGameToView(game: Game): GameViewDto {
-        const view = new GameViewDto();
+    static MapGameToView(game: Game): GamePairViewDto {
+        const view = new GamePairViewDto();
         view.id = game.id.toString();
         let index= 0;
         if(game.playingUsers[1] && game.playingUsers[0].id > game.playingUsers[1].id)
@@ -106,7 +106,6 @@ export class GameViewDto {
         if (view.status == StatusGame.Finished)
             view.finishGameDate = game.finishAt.toISOString();
 
-        console.log(view.questions)
         return view;
 
     }

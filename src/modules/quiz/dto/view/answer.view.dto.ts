@@ -1,6 +1,5 @@
 import { AnswerStatus } from '@modules/quiz/dto/type/answer.statuses.enum';
 import { AnsweredQuestion } from '@modules/quiz/domain/answered.question.entity';
-import console from 'node:console';
 
 export class AnswerViewDto {
     questionId: string;

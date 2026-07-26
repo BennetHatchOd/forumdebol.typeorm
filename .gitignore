@@ -28,6 +28,7 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
+webstorm/"Template Jest.run.xml"
 
 # IDE - VSCode
 .vscode/*

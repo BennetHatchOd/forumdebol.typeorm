@@ -1,12 +1,12 @@
 import { IQueryHandler, Query, QueryHandler } from '@nestjs/cqrs';
-import { GameViewDto } from '@modules/quiz/dto/view/game.view.dto';
+import { GamePairViewDto } from '@modules/quiz/dto/view/game.pair.view.dto';
 import { GameQueryRepository } from '@modules/quiz/infrastucture/query/game.query.repository';
 import { isDbId } from '@core/is.db.id';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
 
-export class GetGameByIdQuery extends Query<GameViewDto> {
+export class GetGameByIdQuery extends Query<GamePairViewDto> {
     constructor(
         public readonly id: string,
         public readonly userId: string,
@@ -20,7 +20,7 @@ export class GetGameByIdHandler implements IQueryHandler<GetGameByIdQuery> {
         private gameQueryRepository: GameQueryRepository,
     ) {}
 
-    async execute({id, userId}: GetGameByIdQuery):Promise<GameViewDto> {
+    async execute({id, userId}: GetGameByIdQuery):Promise<GamePairViewDto> {
 
         const idDB = isDbId(id);
         if (!idDB)
@@ -29,7 +29,7 @@ export class GetGameByIdHandler implements IQueryHandler<GetGameByIdQuery> {
                 code: DomainExceptionCode.BadRequest,
             });
 
-        const game: GameViewDto = await this.gameQueryRepository.findById(idDB);
+        const game: GamePairViewDto = await this.gameQueryRepository.findById(idDB);
 
         if(game.firstPlayerProgress.player.id !== userId &&
           (game.status == StatusGame.PendingSecondPlayer || game.secondPlayerProgress!.player.id !== userId))

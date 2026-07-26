@@ -7,13 +7,12 @@ import { IdInputDto } from '@core/dto/input/id.Input.Dto';
 import { CurrentUserId } from '@core/decorators/current.user';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { AuthGuard } from '@nestjs/passport';
-import { GameViewDto } from '@modules/quiz/dto/view/game.view.dto';
+import { GamePairViewDto } from '@modules/quiz/dto/view/game.pair.view.dto';
 import { GetUserCurrentGameQuery } from '@modules/quiz/application/query/get.user.current.game.query';
 import { GetGameByIdQuery } from '@modules/quiz/application/query/get.game.by.id.query';
 import { RegistrationPlayerCommand } from '@modules/quiz/application/command/registration.player.usecase';
 import { AnswerInputDto } from '@modules/quiz/dto/input/answer.input.dto';
 import { CheckAnswerCommand } from '@modules/quiz/application/command/check.answer.usecase';
-import console from 'node:console';
 import { AnswerViewDto } from '@modules/quiz/dto/view/answer.view.dto';
 import { GetAnswerQuery } from '@modules/quiz/application/query/get.answer.query';
 import { MyStatisticViewDto } from '@modules/quiz/dto/view/my.statistic.view.dto';
@@ -30,7 +29,7 @@ export class GameController {
     @UseGuards(AuthGuard('jwt'))
     async myCurrentGame(
         @CurrentUserId() user: string,
-        ):Promise<GameViewDto> {
+        ):Promise<GamePairViewDto> {
 
         return this.queryBus.execute(new GetUserCurrentGameQuery(user));
 
@@ -41,7 +40,7 @@ export class GameController {
     async getGameById(
         @CurrentUserId() user: string,
         @Param() {id}: IdInputDto,
-    ): Promise<GameViewDto> {
+    ): Promise<GamePairViewDto> {
 
         return this.queryBus.execute(new GetGameByIdQuery(id, user));
     }
@@ -51,7 +50,7 @@ export class GameController {
     @UseGuards(AuthGuard('jwt'))
     async createGame(
         @CurrentUserId() user: string,
-    ): Promise<GameViewDto> {
+    ): Promise<GamePairViewDto> {
 
         const gameId = await this.commandBus.execute(new RegistrationPlayerCommand(user));
         return this.queryBus.execute(new GetGameByIdQuery(gameId, user));

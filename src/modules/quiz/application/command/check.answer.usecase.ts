@@ -1,6 +1,5 @@
 import { Command, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { GameRepository } from '@modules/quiz/infrastucture/game.repository';
-import { QuestionRepository } from '@modules/quiz/infrastucture/question.repository';
 import { Game } from '@modules/quiz/domain/game.entity';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
@@ -9,7 +8,6 @@ import { UserConfig } from '@modules/users-system/config/user.config';
 import { AnsweredQuestion } from '@modules/quiz/domain/answered.question.entity';
 import { User } from '@modules/users-system/domain/user.entity';
 import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
-import console from 'node:console';
 
 export class CheckAnswerCommand extends Command<string> {
     constructor(

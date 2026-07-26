@@ -79,4 +79,4 @@ export async function testHelperFillingArrays(
         email: 'u6@test.local',
         passwordHash: 'hash',
     });
-};
+}

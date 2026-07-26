@@ -19,14 +19,12 @@ import 'dotenv/config';
 import { testDbConfig } from '../../../../../test/test.db.config';
 import { testHelperFillingArrays } from '@modules/quiz/application/test.helper.filling.arrays';
 import { testHelperFillingDb } from '@modules/quiz/application/test.helper.filling.db';
-import { DomainException } from '@core/exceptions/domain.exception';
-import { GetGameByIdHandler, GetGameByIdQuery } from '@modules/quiz/application/query/get.game.by.id.query';
 import { GameQueryRepository } from '@modules/quiz/infrastucture/query/game.query.repository';
 import {
     GetUserCurrentGameHandler,
     GetUserCurrentGameQuery,
 } from '@modules/quiz/application/query/get.user.current.game.query';
-import { GameViewDto } from '@modules/quiz/dto/view/game.view.dto';
+import { GamePairViewDto } from '@modules/quiz/dto/view/game.pair.view.dto';
 
 describe('GetUserCurrentGameHandler integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -42,7 +40,7 @@ describe('GetUserCurrentGameHandler integration (DB)', () => {
     let roundQuestionRepo: Repository<RoundQuestion>;
 
     let users: { id: number, login: string, email: string, passwordHash: string}[] = [];
-    let questions:{ body: string, correctAnswers: string[], published: boolean}[] = [];
+    let questions:{ id: number, body: string, correctAnswers: string[], published: boolean}[] = [];
     let game: Game;
 
     beforeAll(async () => {
@@ -133,7 +131,7 @@ describe('GetUserCurrentGameHandler integration (DB)', () => {
     });
 
     it('should return active game', async () => {
-        let view1: GameViewDto = await getUserCurrentGameHandler.execute(
+        let view1: GamePairViewDto = await getUserCurrentGameHandler.execute(
             new GetUserCurrentGameQuery(users[0].id.toString()));
         let view2 = await getUserCurrentGameHandler.execute(
             new GetUserCurrentGameQuery(users[1].id.toString()));
