@@ -23,6 +23,7 @@ import {
 } from '@modules/quiz/application/command/registration.player.usecase';
 import { testHelperFillingArrays } from '@modules/quiz/application/test.helper.filling.arrays';
 import { DomainException } from '@core/exceptions/domain.exception';
+import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
 
 describe('RegistratonPlayerUseCase integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -56,6 +57,7 @@ describe('RegistratonPlayerUseCase integration (DB)', () => {
                         RoundQuestion,
                         Question,
                         User,
+                        StatisticsUser,
                     ],
                     synchronize: true,
                     autoLoadEntities: true,
@@ -68,6 +70,7 @@ describe('RegistratonPlayerUseCase integration (DB)', () => {
                     RoundQuestion,
                     Question,
                     User,
+                    StatisticsUser,
                 ]),
             ],
             providers: [

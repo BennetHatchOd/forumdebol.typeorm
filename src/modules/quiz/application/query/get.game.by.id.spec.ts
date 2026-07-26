@@ -22,6 +22,7 @@ import { testHelperFillingDb } from '@modules/quiz/application/test.helper.filli
 import { DomainException } from '@core/exceptions/domain.exception';
 import { GetGameByIdHandler, GetGameByIdQuery } from '@modules/quiz/application/query/get.game.by.id.query';
 import { GameQueryRepository } from '@modules/quiz/infrastucture/query/game.query.repository';
+import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
 
 describe('GetGameByIdHandler integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -32,6 +33,7 @@ describe('GetGameByIdHandler integration (DB)', () => {
     let gameRepo: Repository<Game>;
     let userRepo: Repository<User>;
     let questionRepo: Repository<Question>;
+    let statisticsRepo: Repository<StatisticsUser>;
     let playingUserRepo: Repository<PlayingUser>;
     let answeredQuestionRepo: Repository<AnsweredQuestion>;
     let roundQuestionRepo: Repository<RoundQuestion>;
@@ -50,7 +52,7 @@ describe('GetGameByIdHandler integration (DB)', () => {
                     username: testDbConfig.username,
                     password: testDbConfig.password,
                     database: testDbConfig.database,
-                    entities: [Game, PlayingUser, AnsweredQuestion, RoundQuestion, Question, User],
+                    entities: [Game, PlayingUser, AnsweredQuestion, RoundQuestion, Question, User, StatisticsUser],
                     synchronize: true,
                     dropSchema: true,
                 }),
@@ -61,6 +63,7 @@ describe('GetGameByIdHandler integration (DB)', () => {
                     RoundQuestion,
                     Question,
                     User,
+                    StatisticsUser,
                 ]),
             ],
             providers: [
@@ -83,6 +86,7 @@ describe('GetGameByIdHandler integration (DB)', () => {
         getGameByIdHandler = moduleRef.get(GetGameByIdHandler);
 
         gameRepo = moduleRef.get(getRepositoryToken(Game));
+        statisticsRepo = moduleRef.get(getRepositoryToken(StatisticsUser));
         userRepo = moduleRef.get(getRepositoryToken(User));
         questionRepo = moduleRef.get(getRepositoryToken(Question));
         playingUserRepo = moduleRef.get(getRepositoryToken(PlayingUser));
@@ -98,6 +102,7 @@ describe('GetGameByIdHandler integration (DB)', () => {
         await gameRepo.deleteAll();
         await questionRepo.deleteAll();
         await userRepo.deleteAll();
+        await statisticsRepo.deleteAll();
         await testHelperFillingDb(questions,users,userRepo,questionRepo);
         const questionsRound: Question[] =
             await questionRepo

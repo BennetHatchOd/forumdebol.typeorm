@@ -20,6 +20,7 @@ import { testDbConfig } from '../../../../../test/test.db.config';
 import { testHelperFillingArrays } from '@modules/quiz/application/test.helper.filling.arrays';
 import { testHelperFillingDb } from '@modules/quiz/application/test.helper.filling.db';
 import { DomainException } from '@core/exceptions/domain.exception';
+import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
 
 describe('CheckAnswerHandler integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -27,6 +28,7 @@ describe('CheckAnswerHandler integration (DB)', () => {
     let handler: CheckAnswerHandler;
 
     let gameRepo: Repository<Game>;
+    let statisticsRepo: Repository<StatisticsUser>;
     let userRepo: Repository<User>;
     let questionRepo: Repository<Question>;
     let playingUserRepo: Repository<PlayingUser>;
@@ -47,7 +49,8 @@ describe('CheckAnswerHandler integration (DB)', () => {
                     username: testDbConfig.username,
                     password: testDbConfig.password,
                     database: testDbConfig.database,
-                    entities: [Game, PlayingUser, AnsweredQuestion, RoundQuestion, Question, User],
+                    entities: [
+                        Game, PlayingUser, AnsweredQuestion, RoundQuestion, Question, User, StatisticsUser],
                     synchronize: true,
                     dropSchema: true,
                 }),
@@ -58,6 +61,7 @@ describe('CheckAnswerHandler integration (DB)', () => {
                     RoundQuestion,
                     Question,
                     User,
+                    StatisticsUser,
                 ]),
             ],
             providers: [
@@ -77,6 +81,7 @@ describe('CheckAnswerHandler integration (DB)', () => {
         handler = moduleRef.get(CheckAnswerHandler);
 
         gameRepo = moduleRef.get(getRepositoryToken(Game));
+        statisticsRepo = moduleRef.get(getRepositoryToken(StatisticsUser));
         userRepo = moduleRef.get(getRepositoryToken(User));
         questionRepo = moduleRef.get(getRepositoryToken(Question));
         playingUserRepo = moduleRef.get(getRepositoryToken(PlayingUser));
@@ -91,6 +96,7 @@ describe('CheckAnswerHandler integration (DB)', () => {
         await playingUserRepo.deleteAll();
         await gameRepo.deleteAll();
         await questionRepo.deleteAll();
+        await statisticsRepo.deleteAll();
         await userRepo.deleteAll();
         await testHelperFillingDb(questions,users,userRepo,questionRepo);
         const questionsRound: Question[] =

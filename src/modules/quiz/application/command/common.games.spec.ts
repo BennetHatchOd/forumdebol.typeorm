@@ -27,6 +27,7 @@ import {
 import {
     CommonGameTestingHelper,
 } from '@modules/quiz/application/command/common.game.testing.helper';
+import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
 
 describe('Command- and Query- Handlers integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -37,6 +38,7 @@ describe('Command- and Query- Handlers integration (DB)', () => {
     let getGameByIdHandler: GetGameByIdHandler;
 
     let gameRepo: Repository<Game>;
+    let statisticsRepo: Repository<StatisticsUser>;
     let userRepo: Repository<User>;
     let questionRepo: Repository<Question>;
     let playingUserRepo: Repository<PlayingUser>;
@@ -55,7 +57,15 @@ describe('Command- and Query- Handlers integration (DB)', () => {
                     username: testDbConfig.username,
                     password: testDbConfig.password,
                     database: testDbConfig.database,
-                    entities: [Game, PlayingUser, AnsweredQuestion, RoundQuestion, Question, User],
+                    entities: [
+                        Game,
+                        PlayingUser,
+                        AnsweredQuestion,
+                        RoundQuestion,
+                        Question,
+                        User,
+                        StatisticsUser,
+                    ],
                     synchronize: true,
                     dropSchema: true,
                 }),
@@ -66,6 +76,7 @@ describe('Command- and Query- Handlers integration (DB)', () => {
                     RoundQuestion,
                     Question,
                     User,
+                    StatisticsUser,
                 ]),
             ],
             providers: [
@@ -92,6 +103,7 @@ describe('Command- and Query- Handlers integration (DB)', () => {
         getGameByIdHandler = moduleRef.get(GetGameByIdHandler);
 
         gameRepo = moduleRef.get(getRepositoryToken(Game));
+        statisticsRepo = moduleRef.get(getRepositoryToken(StatisticsUser));
         userRepo = moduleRef.get(getRepositoryToken(User));
         questionRepo = moduleRef.get(getRepositoryToken(Question));
         playingUserRepo = moduleRef.get(getRepositoryToken(PlayingUser));
@@ -99,6 +111,7 @@ describe('Command- and Query- Handlers integration (DB)', () => {
         roundQuestionRepo = moduleRef.get(getRepositoryToken(RoundQuestion));
 
         await answeredQuestionRepo.deleteAll();
+        await statisticsRepo.deleteAll();
         await roundQuestionRepo.deleteAll();
         await playingUserRepo.deleteAll();
         await gameRepo.deleteAll();

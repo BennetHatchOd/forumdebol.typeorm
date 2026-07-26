@@ -28,6 +28,7 @@ import {
     CommonGameTestingHelper,
 } from '@modules/quiz/application/command/common.game.testing.helper';
 import { GetMyStatisticHandler, GetMyStatisticQuery } from '@modules/quiz/application/query/get.my.statistic.query';
+import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
 
 describe('GetMyStatisticHandler integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -39,6 +40,7 @@ describe('GetMyStatisticHandler integration (DB)', () => {
     let getMyStatisticHandler: GetMyStatisticHandler;
 
     let gameRepo: Repository<Game>;
+    let statisticRepo: Repository<StatisticsUser>;
     let userRepo: Repository<User>;
     let questionRepo: Repository<Question>;
     let playingUserRepo: Repository<PlayingUser>;
@@ -57,7 +59,15 @@ describe('GetMyStatisticHandler integration (DB)', () => {
                     username: testDbConfig.username,
                     password: testDbConfig.password,
                     database: testDbConfig.database,
-                    entities: [Game, PlayingUser, AnsweredQuestion, RoundQuestion, Question, User],
+                    entities: [
+                        Game,
+                        PlayingUser,
+                        AnsweredQuestion,
+                        RoundQuestion,
+                        Question,
+                        User,
+                        StatisticsUser,
+                    ],
                     synchronize: true,
                     dropSchema: true,
                     logging: false,
@@ -69,6 +79,7 @@ describe('GetMyStatisticHandler integration (DB)', () => {
                     RoundQuestion,
                     Question,
                     User,
+                    StatisticsUser,
                 ]),
             ],
             providers: [
@@ -98,6 +109,7 @@ describe('GetMyStatisticHandler integration (DB)', () => {
         getMyStatisticHandler = moduleRef.get(GetMyStatisticHandler);
 
         gameRepo = moduleRef.get(getRepositoryToken(Game));
+        statisticRepo = moduleRef.get(getRepositoryToken(StatisticsUser));
         userRepo = moduleRef.get(getRepositoryToken(User));
         questionRepo = moduleRef.get(getRepositoryToken(Question));
         playingUserRepo = moduleRef.get(getRepositoryToken(PlayingUser));
@@ -105,6 +117,7 @@ describe('GetMyStatisticHandler integration (DB)', () => {
         roundQuestionRepo = moduleRef.get(getRepositoryToken(RoundQuestion));
 
         await answeredQuestionRepo.deleteAll();
+        await statisticRepo.deleteAll();
         await roundQuestionRepo.deleteAll();
         await playingUserRepo.deleteAll();
         await gameRepo.deleteAll();

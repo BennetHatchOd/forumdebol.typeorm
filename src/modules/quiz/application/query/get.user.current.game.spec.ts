@@ -25,6 +25,7 @@ import {
     GetUserCurrentGameQuery,
 } from '@modules/quiz/application/query/get.user.current.game.query';
 import { GamePairViewDto } from '@modules/quiz/dto/view/game.pair.view.dto';
+import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
 
 describe('GetUserCurrentGameHandler integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -33,6 +34,7 @@ describe('GetUserCurrentGameHandler integration (DB)', () => {
     let getUserCurrentGameHandler: GetUserCurrentGameHandler;
 
     let gameRepo: Repository<Game>;
+    let statisticRepo: Repository<StatisticsUser>;
     let userRepo: Repository<User>;
     let questionRepo: Repository<Question>;
     let playingUserRepo: Repository<PlayingUser>;
@@ -53,7 +55,15 @@ describe('GetUserCurrentGameHandler integration (DB)', () => {
                     username: testDbConfig.username,
                     password: testDbConfig.password,
                     database: testDbConfig.database,
-                    entities: [Game, PlayingUser, AnsweredQuestion, RoundQuestion, Question, User],
+                    entities: [
+                        Game,
+                        PlayingUser,
+                        AnsweredQuestion,
+                        RoundQuestion,
+                        Question,
+                        User,
+                        StatisticsUser,
+                    ],
                     synchronize: true,
                     dropSchema: true,
                 }),
@@ -64,7 +74,8 @@ describe('GetUserCurrentGameHandler integration (DB)', () => {
                     RoundQuestion,
                     Question,
                     User,
-                ]),
+                    StatisticsUser,
+                ],),
             ],
             providers: [
                 CheckAnswerHandler,
@@ -86,6 +97,7 @@ describe('GetUserCurrentGameHandler integration (DB)', () => {
         getUserCurrentGameHandler = moduleRef.get(GetUserCurrentGameHandler);
 
         gameRepo = moduleRef.get(getRepositoryToken(Game));
+        statisticRepo = moduleRef.get(getRepositoryToken(StatisticsUser));
         userRepo = moduleRef.get(getRepositoryToken(User));
         questionRepo = moduleRef.get(getRepositoryToken(Question));
         playingUserRepo = moduleRef.get(getRepositoryToken(PlayingUser));
@@ -96,6 +108,7 @@ describe('GetUserCurrentGameHandler integration (DB)', () => {
 
     beforeEach(async () => {
         await answeredQuestionRepo.deleteAll();
+        await statisticRepo.deleteAll();
         await roundQuestionRepo.deleteAll();
         await playingUserRepo.deleteAll();
         await gameRepo.deleteAll();
