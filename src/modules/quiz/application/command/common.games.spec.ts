@@ -28,6 +28,7 @@ import {
     CommonGameTestingHelper,
 } from '@modules/quiz/application/command/common.game.testing.helper';
 import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
+import { StatisticsRepository } from '@modules/quiz/infrastucture/statistics.repository';
 
 describe('Command- and Query- Handlers integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -82,6 +83,7 @@ describe('Command- and Query- Handlers integration (DB)', () => {
             providers: [
                 CheckAnswerHandler,
                 GameRepository,
+                StatisticsRepository,
                 GetUserCurrentGameHandler,
                 GetGameByIdHandler,
                 RegistrationPlayerHandler,

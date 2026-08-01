@@ -61,7 +61,7 @@ export class GamePairViewDto {
             score: game.playingUsers[index].score,
         };
         view.status = game.status;
-        view.pairCreatedDate = game.playingUsers[index].registrationAt.toISOString();
+        view.pairCreatedDate = game.pairCreatedAt.toISOString();
         if(game.status == StatusGame.PendingSecondPlayer) {
             return view;
         }
@@ -102,7 +102,7 @@ export class GamePairViewDto {
                     addedAt: answer.addedAt.toISOString(),
                 })
         }
-        view.startGameDate = game.playingUsers[1 - index].registrationAt.toISOString();
+        view.startGameDate = game.startAt.toISOString();
         if (view.status == StatusGame.Finished)
             view.finishGameDate = game.finishAt.toISOString();
 

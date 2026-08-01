@@ -23,6 +23,7 @@ import { DomainException } from '@core/exceptions/domain.exception';
 import { GetGameByIdHandler, GetGameByIdQuery } from '@modules/quiz/application/query/get.game.by.id.query';
 import { GameQueryRepository } from '@modules/quiz/infrastucture/query/game.query.repository';
 import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
+import { StatisticsRepository } from '@modules/quiz/infrastucture/statistics.repository';
 
 describe('GetGameByIdHandler integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -68,6 +69,7 @@ describe('GetGameByIdHandler integration (DB)', () => {
             ],
             providers: [
                 CheckAnswerHandler,
+                StatisticsRepository,
                 GameRepository,
                 GetGameByIdHandler,
                 QuestionRepository,
@@ -114,6 +116,7 @@ describe('GetGameByIdHandler integration (DB)', () => {
 
         game = new Game();
         game.status = StatusGame.Active;
+        game.startAt = new Date();
         const playingUser = PlayingUser.create(+users[0], game);
         game.playingUsers = [
             PlayingUser.create(users[0].id, game),

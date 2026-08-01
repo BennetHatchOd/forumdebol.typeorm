@@ -13,7 +13,7 @@ class PaginationParams {
     pageSize: number = 10;
 
     public skip: number = 0;
-    public maxPage: number = 0;
+     public maxPage: number = 0;
 
     calculateSkip(totalPage: number): void {
 

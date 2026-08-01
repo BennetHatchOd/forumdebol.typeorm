@@ -21,6 +21,7 @@ import { testHelperFillingArrays } from '@modules/quiz/application/test.helper.f
 import { testHelperFillingDb } from '@modules/quiz/application/test.helper.filling.db';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
+import { StatisticsRepository } from '@modules/quiz/infrastucture/statistics.repository';
 
 describe('CheckAnswerHandler integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -68,6 +69,7 @@ describe('CheckAnswerHandler integration (DB)', () => {
                 CheckAnswerHandler,
                 GameRepository,
                 QuestionRepository,
+                StatisticsRepository,
                 {
                     provide: UserConfig,
                     useValue: {

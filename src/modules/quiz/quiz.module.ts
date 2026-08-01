@@ -15,6 +15,8 @@ import { GameQueryRepository } from '@modules/quiz/infrastucture/query/game.quer
 import { GameRepository } from '@modules/quiz/infrastucture/game.repository';
 import { UserConfig } from '@modules/users-system/config/user.config';
 import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
+import { StatisticsQueryRepository } from '@modules/quiz/infrastucture/query/statistics.query.repository';
+import { StatisticsRepository } from '@modules/quiz/infrastucture/statistics.repository';
 
 @Module({
     imports: [
@@ -31,6 +33,8 @@ import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
         QuestionQueryRepository,
         GameRepository,
         GameQueryRepository,
+        StatisticsRepository,
+        StatisticsQueryRepository,
         UserConfig,
     ],
     exports:[

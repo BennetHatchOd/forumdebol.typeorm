@@ -26,6 +26,7 @@ import {
 } from '@modules/quiz/application/query/get.user.current.game.query';
 import { GamePairViewDto } from '@modules/quiz/dto/view/game.pair.view.dto';
 import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
+import { StatisticsRepository } from '@modules/quiz/infrastucture/statistics.repository';
 
 describe('GetUserCurrentGameHandler integration (DB)', () => {
     let moduleRef: TestingModule;
@@ -83,6 +84,7 @@ describe('GetUserCurrentGameHandler integration (DB)', () => {
                 GetUserCurrentGameHandler,
                 QuestionRepository,
                 GameQueryRepository,
+                StatisticsRepository,
                 {
                     provide: UserConfig,
                     useValue: {
@@ -125,6 +127,7 @@ describe('GetUserCurrentGameHandler integration (DB)', () => {
 
         game = new Game();
         game.status = StatusGame.Active;
+        game.startAt = new Date();
         const playingUser = PlayingUser.create(+users[0], game);
         game.playingUsers = [
             PlayingUser.create(users[0].id, game),

@@ -19,9 +19,6 @@ export class PlayingUser {
     @Column({nullable: false, default: 0 } )
     score: number;
 
-    @CreateDateColumn()
-    registrationAt: Date;
-
     static create(userId:number, game: Game): PlayingUser {
         const playingUser = new this();
         playingUser.user = {id: userId} as User;

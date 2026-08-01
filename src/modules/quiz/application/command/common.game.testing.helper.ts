@@ -29,7 +29,7 @@ export class CommonGameTestingHelper {
         correctAnswers: string[],
         published: boolean
     }[] = [];
-    private static users: {
+    public static users: {
         id: number,
         login: string,
         email: string,

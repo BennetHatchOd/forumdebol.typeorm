@@ -49,6 +49,7 @@ export class RegistrationPlayerHandler implements ICommandHandler<
             );
             pendingGame.playingUsers.push(newPlayer);
             pendingGame.status = StatusGame.Active;
+            pendingGame.startAt = new Date();
             await this.quizRepository.save(pendingGame);
             return pendingGame.id.toString();
         }

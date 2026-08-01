@@ -29,17 +29,20 @@ import {
 } from '@modules/quiz/application/command/common.game.testing.helper';
 import { GetMyStatisticHandler, GetMyStatisticQuery } from '@modules/quiz/application/query/get.my.statistic.query';
 import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
+import { GetAllGameUserHandler, GetAllGameUserQuery } from '@modules/quiz/application/query/get.all.game.user.query';
+import { GamesSortBy, GetGamesQueryParams } from '@modules/quiz/dto/input/get.games.query.params.input.dto';
 import { StatisticsRepository } from '@modules/quiz/infrastucture/statistics.repository';
-import { StatisticsQueryRepository } from '@modules/quiz/infrastucture/query/statistics.query.repository';
+import { SortDirection } from '@core/dto/base.query.params.input.dto';
 
-describe('GetMyStatisticHandler integration (DB)', () => {
+describe('GetAllGameUserHandler integration (DB)', () => {
     let moduleRef: TestingModule;
     let dataSource: DataSource;
+
     let checkAnswerHandler: CheckAnswerHandler;
     let registrationPlayerHandler: RegistrationPlayerHandler;
     let getUserCurrentGameHandler: GetUserCurrentGameHandler;
     let getGameByIdHandler: GetGameByIdHandler;
-    let getMyStatisticHandler: GetMyStatisticHandler;
+    let getAllGameUserHandler: GetAllGameUserHandler;
 
     let gameRepo: Repository<Game>;
     let statisticRepo: Repository<StatisticsUser>;
@@ -86,14 +89,13 @@ describe('GetMyStatisticHandler integration (DB)', () => {
             ],
             providers: [
                 CheckAnswerHandler,
-                GetMyStatisticHandler,
+                StatisticsRepository,
+                GetAllGameUserHandler,
                 GameRepository,
                 GetUserCurrentGameHandler,
                 GetGameByIdHandler,
                 RegistrationPlayerHandler,
                 QuestionRepository,
-                StatisticsRepository,
-                StatisticsQueryRepository,
                 GameQueryRepository,
                 {
                     provide: UserConfig,
@@ -110,7 +112,7 @@ describe('GetMyStatisticHandler integration (DB)', () => {
         registrationPlayerHandler = moduleRef.get(RegistrationPlayerHandler);
         getUserCurrentGameHandler = moduleRef.get(GetUserCurrentGameHandler);
         getGameByIdHandler = moduleRef.get(GetGameByIdHandler);
-        getMyStatisticHandler = moduleRef.get(GetMyStatisticHandler);
+        getAllGameUserHandler = moduleRef.get(GetAllGameUserHandler);
 
         gameRepo = moduleRef.get(getRepositoryToken(Game));
         statisticRepo = moduleRef.get(getRepositoryToken(StatisticsUser));
@@ -138,7 +140,7 @@ describe('GetMyStatisticHandler integration (DB)', () => {
         await moduleRef.close();
     });
 
-    it('should create many finished games and receive their statistics', async () => {
+    it('should create many finished games and receive them', async () => {
 
         const order =
             [0, 1,  0,  0,  0,  1,  1,  1,  0, 1];
@@ -163,37 +165,73 @@ describe('GetMyStatisticHandler integration (DB)', () => {
             await game.initialization();
             await game.step(order, correct[i % correct.length]);
         }
-        let view = await getMyStatisticHandler.execute(
-            new GetMyStatisticQuery("1"));
+
+        let user = CommonGameTestingHelper.users[0].id.toString();
+        let queryString = new GetGamesQueryParams();
+        queryString.sortBy = GamesSortBy.FinishGameDate;
+        queryString.sortDirection = SortDirection.Desc;
+        let view = await getAllGameUserHandler.execute(
+            new GetAllGameUserQuery(user,queryString));
 
         expect(view).toEqual({
-            sumScore: 23,
-            avgScores: 3.29,
-            gamesCount:	7,
-            winsCount:	3,
-            lossesCount: 2,
-            drawsCount:	2});
-        view = await getMyStatisticHandler.execute(
-            new GetMyStatisticQuery("4"));
+         pagesCount: 1,
+         page: 1,
+         pageSize: 10,
+         totalCount: 7,
+         items: expect.any(Array),
+         });
+        expect(view.items.length).toEqual(7);
+        expect(view.items[0].firstPlayerProgress.player.id).toBe("4");
+        expect(view.items[0].secondPlayerProgress!.player.id).toBe("1");
+        expect(view.items[0].firstPlayerProgress.score).toBe(4);
+        expect(view.items[0].secondPlayerProgress!.score).toBe(3);
+
+        user = CommonGameTestingHelper.users[3].id.toString();
+        queryString = new GetGamesQueryParams();
+        queryString.sortBy = GamesSortBy.StartGameDate;
+        queryString.sortDirection = SortDirection.Asc;
+        queryString.pageNumber = 2;
+        queryString.pageSize = 2;
+        view = await getAllGameUserHandler.execute(
+            new GetAllGameUserQuery(user,queryString));
 
         expect(view).toEqual({
-            sumScore: 37,
-            avgScores: 3.08,
-            gamesCount:	12,
-            winsCount:	6,
-            lossesCount: 3,
-            drawsCount:	3});
+            pagesCount: 6,
+            page: 2,
+            pageSize: 2,
+            totalCount: 12,
+            items: expect.any(Array),
+        });
+        expect(view.items.length).toEqual(2);
 
-        view = await getMyStatisticHandler.execute(
-            new GetMyStatisticQuery("6"));
+        expect(view.items[0].firstPlayerProgress.player.id).toBe("3")
+        expect(view.items[0].secondPlayerProgress!.player.id).toBe("4")
+        expect(view.items[0].firstPlayerProgress.score).toBe(0)
+        expect(view.items[0].secondPlayerProgress!.score).toBe(4)
 
-        expect(view).toEqual({
-            sumScore: 21,
-            avgScores: 3,
-            gamesCount:	7,
-            winsCount:	2,
-            lossesCount: 3,
-            drawsCount:	2});
+        expect(view.items[1].firstPlayerProgress.player.id).toBe("4")
+        expect(view.items[1].secondPlayerProgress!.player.id).toBe("5")
+        expect(view.items[1].firstPlayerProgress.score).toBe(4)
+        expect(view.items[1].secondPlayerProgress!.score).toBe(1)
+    //
+    //     expect(view).toEqual({
+    //         sumScore: 37,
+    //         avgScores: 3.08,
+    //         gamesCount:	12,
+    //         winsCount:	6,
+    //         lossesCount: 3,
+    //         drawsCount:	3});
+    //
+    //     view = await getAllGameUserHandler.execute(
+    //         new GetAllGameUserQuery("6"));
+    //
+    //     expect(view).toEqual({
+    //         sumScore: 21,
+    //         avgScores: 3,
+    //         gamesCount:	7,
+    //         winsCount:	2,
+    //         lossesCount: 3,
+    //         drawsCount:	2});
     });
 
  });

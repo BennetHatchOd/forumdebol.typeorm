@@ -4,12 +4,14 @@ import { GetGameByIdHandler } from '@modules/quiz/application/query/get.game.by.
 import { GetUserCurrentGameHandler } from '@modules/quiz/application/query/get.user.current.game.query';
 import { GetAnswerHandler } from '@modules/quiz/application/query/get.answer.query';
 import { GetMyStatisticHandler } from '@modules/quiz/application/query/get.my.statistic.query';
+import { GetAllGameUserHandler } from '@modules/quiz/application/query/get.all.game.user.query';
 
 export const QueryHandlers = [
     GetQuestionHandler,
     GetAllQuestionHandler,
     GetGameByIdHandler,
     GetUserCurrentGameHandler,
+    GetAllGameUserHandler,
     GetAnswerHandler,
     GetMyStatisticHandler,
 ];

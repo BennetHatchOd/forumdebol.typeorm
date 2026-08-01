@@ -9,6 +9,7 @@ import { AnsweredQuestion } from '@modules/quiz/domain/answered.question.entity'
 import { User } from '@modules/users-system/domain/user.entity';
 import { StatusGame } from '@modules/quiz/dto/type/status.game.enum';
 import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
+import { StatisticsRepository } from '@modules/quiz/infrastucture/statistics.repository';
 
 export class CheckAnswerCommand extends Command<string> {
     constructor(
@@ -25,6 +26,7 @@ export class CheckAnswerHandler implements ICommandHandler<
 {
     constructor(
         private quizRepository: GameRepository,
+        private statRepository: StatisticsRepository,
         private readonly userConfig: UserConfig,
     ) {}
 
@@ -99,7 +101,7 @@ export class CheckAnswerHandler implements ICommandHandler<
     async calculationStatistics(userFirst: number, scoreFirst: number, userSecond: number, scoreSecond: number): Promise<void> {
         let userFirstStatistics: StatisticsUser;
         let userSecondStatistics: StatisticsUser;
-        const statistics: StatisticsUser[] = await this.quizRepository.findStatistics([userFirst, userSecond]);
+        const statistics: StatisticsUser[] = await this.statRepository.find([userFirst, userSecond]);
 
         if(statistics.length == 0){
             userFirstStatistics = StatisticsUser.create(userFirst);
@@ -139,7 +141,7 @@ export class CheckAnswerHandler implements ICommandHandler<
             userSecondStatistics!.draw(scoreSecond);
         }
 
-        await this.quizRepository.saveStatistics(userFirstStatistics!);
-        await this.quizRepository.saveStatistics(userSecondStatistics!);
+        await this.statRepository.save(userFirstStatistics!);
+        await this.statRepository.save(userSecondStatistics!);
     }
 }

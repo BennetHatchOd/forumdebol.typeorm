@@ -19,7 +19,7 @@ export class GetUserCurrentGameHandler implements IQueryHandler<GetUserCurrentGa
 
     async execute({userId}: GetUserCurrentGameQuery):Promise<GamePairViewDto> {
 
-        const activeGame: GamePairViewDto | null = await this.gameQueryRepository.findUnFinished(userId);
+        const activeGame: GamePairViewDto | null = await this.gameQueryRepository.findUnfinished(userId);
         if (!activeGame)
             throw  new DomainException({
                 message: 'no active pair for current user',

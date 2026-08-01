@@ -4,6 +4,7 @@ import { AnsweredQuestion } from '@modules/quiz/domain/answered.question.entity'
 import { PlayingUser } from '@modules/quiz/domain/playing.user.entity';
 import { RoundQuestion } from '@modules/quiz/domain/round.question.entity';
 import { Question } from '@modules/quiz/domain/question.entity';
+import { now } from 'mongoose';
 
 @Entity()
 export class Game {
@@ -18,6 +19,12 @@ export class Game {
         enumName: 'status_game',
     })
     status: StatusGame;
+
+    @Column({default: now()})
+    pairCreatedAt: Date;
+
+    @Column({default: null})
+    startAt: Date;
 
     @Column({default: null})
     finishAt: Date;
@@ -35,6 +42,7 @@ export class Game {
     static create(questions: Question[], userId:string): Game {
         const game: Game = new this();
         game.status = StatusGame.PendingSecondPlayer;
+        game.pairCreatedAt = new Date();
         const playingUser = PlayingUser.create(+userId, game);
         game.playingUsers = [playingUser];
         game.answeredQuestion = [];
