@@ -19,7 +19,7 @@ import { QuestionInputDto } from '@modules/quiz/dto/input/question.input.dto';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
 import { QuestionViewDto } from '@modules/quiz/dto/view/question.view.dto';
 import { PublishQuestionInputDto } from '@modules/quiz/dto/input/publish.question.input.dto';
-import { GetQuestionQueryParams } from '@modules/quiz/dto/input/get.question.query.params.input.dto';
+import { GetQuestionQueryParams } from '@modules/quiz/dto/input/get.question.query.params';
 import { CreateQuestionCommand } from '@modules/quiz/application/command/create.question.usecase';
 import { EditQuestionCommand } from '@modules/quiz/application/command/edit.question.usecase';
 import { DeleteQuestionCommand } from '@modules/quiz/application/command/delete.question.usecase';

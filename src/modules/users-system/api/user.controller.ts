@@ -13,7 +13,7 @@ import { UserInputDto } from '../dto/input/user.input.dto';
 import { UserViewDto } from '../dto/view/user.view.dto';
 import { UserQueryRepository } from '../infrastucture/query/user.query.repository';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
-import { GetUserQueryParams } from '../dto/input/get.user.query.params.input.dto';
+import { GetUserQueryParams } from '../dto/input/get.user.query.params';
 import { AuthGuard } from '@nestjs/passport';
 import { URL_PATH } from '@core/url.path.setting';
 import { IdInputDto } from '@core/dto/input/id.Input.Dto';

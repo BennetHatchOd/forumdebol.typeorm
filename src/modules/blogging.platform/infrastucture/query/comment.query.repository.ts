@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CommentViewDto } from '../../dto/view/comment.view.dto';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
-import { GetCommentQueryParams } from '@modules/blogging.platform/dto/input/get.comment.query.params.input.dto';
+import { GetCommentQueryParams } from '@modules/blogging.platform/dto/input/get.comment.query.params';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
 import { EmptyPaginator } from '@core/dto/empty.paginator';
 import { EntityManager } from 'typeorm';

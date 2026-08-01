@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BlogViewDto } from '../../dto/view/blog.view.dto';
 import { Blog } from '../../domain/blog.entity';
-import { GetBlogQueryParams } from '../../dto/input/get.blog.query.params.input.dto';
+import { GetBlogQueryParams } from '../../dto/input/get.blog.query.params';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';

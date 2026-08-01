@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Post } from '../../domain/post.entity';
 import { PostViewDto } from '../../dto/view/post.view.dto';
-import { GetPostQueryParams } from '../../dto/input/get.post.query.params.input.dto';
+import { GetPostQueryParams } from '../../dto/input/get.post.query.params';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';

@@ -18,7 +18,7 @@ import { GetAnswerQuery } from '@modules/quiz/application/query/get.answer.query
 import { MyStatisticViewDto } from '@modules/quiz/dto/view/my.statistic.view.dto';
 import { GetMyStatisticQuery } from '@modules/quiz/application/query/get.my.statistic.query';
 import { GetAllGameUserQuery } from '@modules/quiz/application/query/get.all.game.user.query';
-import { GetGamesQueryParams } from '@modules/quiz/dto/input/get.games.query.params.input.dto';
+import { GetGamesQueryParams } from '@modules/quiz/dto/input/get.games.query.params';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
 
 @Controller(URL_PATH.games)

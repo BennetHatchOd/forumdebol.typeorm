@@ -9,7 +9,7 @@ import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { AnsweredQuestion } from '@modules/quiz/domain/answered.question.entity';
 import { GamePairViewDto } from '@modules/quiz/dto/view/game.pair.view.dto';
 import { AnswerViewDto } from '@modules/quiz/dto/view/answer.view.dto';
-import { gamesSortByToDb, GetGamesQueryParams } from '@modules/quiz/dto/input/get.games.query.params.input.dto';
+import { gamesSortByToDb, GetGamesQueryParams } from '@modules/quiz/dto/input/get.games.query.params';
 import { sortDirectionToDb } from '@core/dto/base.query.params.input.dto';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
 import { EmptyPaginator } from '@core/dto/empty.paginator';

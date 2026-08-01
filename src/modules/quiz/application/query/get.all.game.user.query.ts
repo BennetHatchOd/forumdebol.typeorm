@@ -7,7 +7,7 @@ import { EmptyPaginator } from '@core/dto/empty.paginator';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
 import { BlogViewDto } from '@modules/blogging.platform/dto/view/blog.view.dto';
 import { sortDirectionToDb } from '@core/dto/base.query.params.input.dto';
-import { GetGamesQueryParams } from '@modules/quiz/dto/input/get.games.query.params.input.dto';
+import { GetGamesQueryParams } from '@modules/quiz/dto/input/get.games.query.params';
 
 export class GetAllGameUserQuery extends Query<PaginatedViewDto<GamePairViewDto>> {
     constructor(

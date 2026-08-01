@@ -9,7 +9,7 @@ import { isDbId } from '@core/is.db.id';
 import { sortDirectionToDb } from '@core/dto/base.query.params.input.dto';
 import { Question } from '@modules/quiz/domain/question.entity';
 import { QuestionViewDto } from '@modules/quiz/dto/view/question.view.dto';
-import { GetQuestionQueryParams } from '@modules/quiz/dto/input/get.question.query.params.input.dto';
+import { GetQuestionQueryParams } from '@modules/quiz/dto/input/get.question.query.params';
 import { PublishedStatus } from '@modules/quiz/dto/type/published.status.type';
 
 

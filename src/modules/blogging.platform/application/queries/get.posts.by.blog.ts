@@ -5,7 +5,7 @@ import { PostQueryRepository } from '@modules/blogging.platform/infrastucture/qu
 import { IQueryHandler, Query, QueryHandler } from '@nestjs/cqrs';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
-import { GetPostQueryParams } from '@modules/blogging.platform/dto/input/get.post.query.params.input.dto';
+import { GetPostQueryParams } from '@modules/blogging.platform/dto/input/get.post.query.params';
 import { isDbId } from '@core/is.db.id';
 
 export class GetPostsByBlogQuery extends Query<PaginatedViewDto<PostViewDto>> {

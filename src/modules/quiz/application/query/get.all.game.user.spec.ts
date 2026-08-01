@@ -30,7 +30,7 @@ import {
 import { GetMyStatisticHandler, GetMyStatisticQuery } from '@modules/quiz/application/query/get.my.statistic.query';
 import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
 import { GetAllGameUserHandler, GetAllGameUserQuery } from '@modules/quiz/application/query/get.all.game.user.query';
-import { GamesSortBy, GetGamesQueryParams } from '@modules/quiz/dto/input/get.games.query.params.input.dto';
+import { GamesSortBy, GetGamesQueryParams } from '@modules/quiz/dto/input/get.games.query.params';
 import { StatisticsRepository } from '@modules/quiz/infrastucture/statistics.repository';
 import { SortDirection } from '@core/dto/base.query.params.input.dto';
 

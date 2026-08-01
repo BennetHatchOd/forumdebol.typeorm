@@ -24,8 +24,8 @@ import { LikeCreateDto } from '@modules/blogging.platform/dto/create/like.create
 import { LikeTarget } from '@modules/blogging.platform/dto/enum/like.target.enum';
 import { MakeLikeCommand } from '@modules/blogging.platform/application/commands/make.like.usecase';
 import { GetCommentsByPostQuery } from '@modules/blogging.platform/application/queries/get.comments.by.post';
-import { GetCommentQueryParams } from '../dto/input/get.comment.query.params.input.dto';
-import { GetPostQueryParams } from '@modules/blogging.platform/dto/input/get.post.query.params.input.dto';
+import { GetCommentQueryParams } from '../dto/input/get.comment.query.params';
+import { GetPostQueryParams } from '@modules/blogging.platform/dto/input/get.post.query.params';
 import { CreateCommentDto } from '@modules/blogging.platform/dto/create/create.comment.dto';
 
 @Controller(URL_PATH.posts)

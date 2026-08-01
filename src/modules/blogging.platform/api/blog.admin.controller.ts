@@ -13,7 +13,7 @@ import {
 import { BlogQueryRepository } from '../infrastucture/query/blog.query.repository';
 import { BlogViewDto } from '../dto/view/blog.view.dto';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
-import { GetBlogQueryParams } from '../dto/input/get.blog.query.params.input.dto';
+import { GetBlogQueryParams } from '../dto/input/get.blog.query.params';
 import { BlogInputDto } from '../dto/input/blog.input.dto';
 import { PostQueryRepository } from '../infrastucture/query/post.query.repository';
 import { PostViewDto } from '../dto/view/post.view.dto';
@@ -31,7 +31,7 @@ import { DeleteBlogCommand } from '@modules/blogging.platform/application/comman
 import { CreatePostCommand } from '@modules/blogging.platform/application/commands/create.post.usecase';
 import { EditPostCommand } from '@modules/blogging.platform/application/commands/edit.post.usecase';
 import { DeletePostCommand } from '@modules/blogging.platform/application/commands/delete.post.usecase';
-import { GetPostQueryParams } from '@modules/blogging.platform/dto/input/get.post.query.params.input.dto';
+import { GetPostQueryParams } from '@modules/blogging.platform/dto/input/get.post.query.params';
 
 
 @Controller(URL_PATH.blogsAdmin)

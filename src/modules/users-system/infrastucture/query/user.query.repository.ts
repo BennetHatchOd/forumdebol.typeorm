@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserViewDto } from '../../dto/view/user.view.dto';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
-import { GetUserQueryParams } from '../../dto/input/get.user.query.params.input.dto';
+import { GetUserQueryParams } from '../../dto/input/get.user.query.params';
 import { DomainException } from '@core/exceptions/domain.exception';
 import { DomainExceptionCode } from '@core/exceptions/domain.exception.code';
 import { EmptyPaginator } from '@core/dto/empty.paginator';

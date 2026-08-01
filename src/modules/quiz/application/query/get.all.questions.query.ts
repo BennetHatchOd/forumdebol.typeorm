@@ -1,7 +1,7 @@
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
 import { IQueryHandler, Query, QueryHandler } from '@nestjs/cqrs';
 import { QuestionViewDto } from '@modules/quiz/dto/view/question.view.dto';
-import { GetQuestionQueryParams } from '@modules/quiz/dto/input/get.question.query.params.input.dto';
+import { GetQuestionQueryParams } from '@modules/quiz/dto/input/get.question.query.params';
 import { QuestionQueryRepository } from '@modules/quiz/infrastucture/query/question.query.repository';
 
 export class GetAllQuestionsQuery extends Query<PaginatedViewDto<QuestionViewDto>> {
