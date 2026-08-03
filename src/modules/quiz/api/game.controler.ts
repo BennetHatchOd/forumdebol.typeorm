@@ -20,6 +20,9 @@ import { GetMyStatisticQuery } from '@modules/quiz/application/query/get.my.stat
 import { GetAllGameUserQuery } from '@modules/quiz/application/query/get.all.game.user.query';
 import { GetGamesQueryParams } from '@modules/quiz/dto/input/get.games.query.params';
 import { PaginatedViewDto } from '@core/dto/base.paginated.view.dto';
+import { GetAllStatisticsQueryParams } from '@modules/quiz/dto/input/get.all.statistics.query.params';
+import console from 'node:console';
+import { GetAllStatisticQuery } from '@modules/quiz/application/query/get.all.statistic.query';
 
 @Controller(URL_PATH.games)
 export class GameController {
@@ -27,6 +30,15 @@ export class GameController {
         private commandBus: CommandBus,
         private queryBus: QueryBus,
     ){}
+
+    @Get('users/top')
+    async usersTop(
+        @Query() query: GetAllStatisticsQueryParams,){
+//    ):Promise<PaginatedViewDto<GamePairViewDto>> {
+
+       return this.queryBus.execute(new GetAllStatisticQuery(query));
+
+    }
 
     @Get('pairs/my')
     @UseGuards(AuthGuard('jwt'))

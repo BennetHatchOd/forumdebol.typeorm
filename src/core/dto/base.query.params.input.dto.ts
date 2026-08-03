@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsNumber, Min } from 'class-validator';
 
-class PaginationParams {
+export class PaginationParams {
 
     @Type(() => Number)
     @IsNumber()

@@ -27,19 +27,20 @@ import {
 import {
     CommonGameTestingHelper,
 } from '@modules/quiz/application/command/common.game.testing.helper';
-import { GetMyStatisticHandler, GetMyStatisticQuery } from '@modules/quiz/application/query/get.my.statistic.query';
 import { StatisticsUser } from '@modules/quiz/domain/statistics.user.entity';
 import { StatisticsRepository } from '@modules/quiz/infrastucture/statistics.repository';
 import { StatisticsQueryRepository } from '@modules/quiz/infrastucture/query/statistics.query.repository';
+import { GetAllStatisticHandler, GetAllStatisticQuery } from '@modules/quiz/application/query/get.all.statistic.query';
+import { GetAllStatisticsQueryParams } from '@modules/quiz/dto/input/get.all.statistics.query.params';
 
-describe('GetMyStatisticHandler integration (DB)', () => {
+describe('GetAllStatisticHandler integration (DB)', () => {
     let moduleRef: TestingModule;
     let dataSource: DataSource;
     let checkAnswerHandler: CheckAnswerHandler;
     let registrationPlayerHandler: RegistrationPlayerHandler;
     let getUserCurrentGameHandler: GetUserCurrentGameHandler;
     let getGameByIdHandler: GetGameByIdHandler;
-    let getMyStatisticHandler: GetMyStatisticHandler;
+    let getAllStatisticHandler: GetAllStatisticHandler;
 
     let gameRepo: Repository<Game>;
     let statisticRepo: Repository<StatisticsUser>;
@@ -86,7 +87,7 @@ describe('GetMyStatisticHandler integration (DB)', () => {
             ],
             providers: [
                 CheckAnswerHandler,
-                GetMyStatisticHandler,
+                GetAllStatisticHandler,
                 GameRepository,
                 GetUserCurrentGameHandler,
                 GetGameByIdHandler,
@@ -110,7 +111,7 @@ describe('GetMyStatisticHandler integration (DB)', () => {
         registrationPlayerHandler = moduleRef.get(RegistrationPlayerHandler);
         getUserCurrentGameHandler = moduleRef.get(GetUserCurrentGameHandler);
         getGameByIdHandler = moduleRef.get(GetGameByIdHandler);
-        getMyStatisticHandler = moduleRef.get(GetMyStatisticHandler);
+        getAllStatisticHandler = moduleRef.get(GetAllStatisticHandler);
 
         gameRepo = moduleRef.get(getRepositoryToken(Game));
         statisticRepo = moduleRef.get(getRepositoryToken(StatisticsUser));
@@ -131,14 +132,95 @@ describe('GetMyStatisticHandler integration (DB)', () => {
 
     beforeEach(async () => {
 
-       });
+    });
 
     afterAll(async () => {
         await dataSource.destroy();
         await moduleRef.close();
     });
 
-    it('should create many finished games and receive their statistics', async () => {
+    it('should create many finished games and receive top statistics', async () => {
+        //      wins    draw    loss    score   game    avr
+        // u0   3       2       2       23      7       3.28
+        // u1   3       5       0       28      8       3.5
+        // u2   0       2       5       11      7       1.57
+        // u3   6       3       3       37      12      3.08
+        // u4   3       2       4       25      9       2.77
+        // u5   2       2       3       21      7       3
+        const scores = [
+            {
+                sumScore: 23,
+                avgScores: 3.29,
+                gamesCount:	7,
+                winsCount:	3,
+                lossesCount: 2,
+                drawsCount:	2,
+                player:{
+                    id: expect.any(String),
+                    login: 'u0'
+                }
+            },
+            {
+                sumScore: 28,
+                avgScores: 3.5,
+                gamesCount:	8,
+                winsCount:	3,
+                lossesCount: 0,
+                drawsCount:	5,
+                player:{
+                    id: expect.any(String),
+                    login: 'u1'
+                }
+            },
+            {
+                sumScore: 11,
+                avgScores: 1.57,
+                gamesCount:	7,
+                winsCount:	0,
+                lossesCount: 5,
+                drawsCount:	2,
+                player:{
+                    id: expect.any(String),
+                    login: 'u2'
+                }
+            },
+            {
+                sumScore: 37,
+                avgScores: 3.08,
+                gamesCount:	12,
+                winsCount:	6,
+                lossesCount: 3,
+                drawsCount:	3,
+                player:{
+                    id: expect.any(String),
+                    login: 'u3'
+                }
+            },
+            {
+                sumScore: 25,
+                avgScores: 2.78,
+                gamesCount:	9,
+                winsCount:	3,
+                lossesCount: 4,
+                drawsCount:	2,
+                player:{
+                    id: expect.any(String),
+                    login: 'u4'
+                }
+            },
+            {
+                sumScore: 21,
+                avgScores: 3,
+                gamesCount:	7,
+                winsCount:	2,
+                lossesCount: 3,
+                drawsCount:	2,
+                player:{
+                    id: expect.any(String),
+                    login: 'u5'
+                }
+            }
+        ];
 
         const order =
             [0, 1,  0,  0,  0,  1,  1,  1,  0, 1];
@@ -164,36 +246,61 @@ describe('GetMyStatisticHandler integration (DB)', () => {
             await game.step(order, correct[i % correct.length]);
         }
 
-
-        let view = await getMyStatisticHandler.execute(
-            new GetMyStatisticQuery("1"));
+        // Default value : ?sort=avgScores desc&sort=sumScore desc
+        let query = new GetAllStatisticsQueryParams();
+        query.sort = undefined;
+        query.pageSize = 3;
+        query.pageNumber = 1;
+        let view = await getAllStatisticHandler.execute(
+            new GetAllStatisticQuery(query));
         expect(view).toEqual({
-            sumScore: 23,
-            avgScores: 3.29,
-            gamesCount:	7,
-            winsCount:	3,
-            lossesCount: 2,
-            drawsCount:	2});
+            pagesCount: 2,
+            page: 1,
+            pageSize: 3,
+            totalCount: 6,
+            items: expect.any(Array),
+        });
+        expect(view.items[0]).toEqual(scores[1])
 
-        view = await getMyStatisticHandler.execute(
-            new GetMyStatisticQuery("4"));
+        query.sort = [
+            'winsCount asc',
+            'gamesCount desc',
+            'winsCount desc',
+            'avgScores asc',
+            'avgScores asc'
+        ];
+        query.pageSize = 2;
+        query.pageNumber = 2;
+        view = await getAllStatisticHandler.execute(
+            new GetAllStatisticQuery(query));
         expect(view).toEqual({
-            sumScore: 37,
-            avgScores: 3.08,
-            gamesCount:	12,
-            winsCount:	6,
-            lossesCount: 3,
-            drawsCount:	3});
-
-        view = await getMyStatisticHandler.execute(
-            new GetMyStatisticQuery("6"));
-        expect(view).toEqual({
-            sumScore: 21,
-            avgScores: 3,
-            gamesCount:	7,
-            winsCount:	2,
-            lossesCount: 3,
-            drawsCount:	2});
+            pagesCount: 3,
+            page: 2,
+            pageSize: 2,
+            totalCount: 6,
+            items: expect.any(Array),
+        });
+        expect(view.items[0]).toEqual(scores[4]);
+    //
+    //     view = await getAllStatisticHandler.execute(
+    //         new GetAllStatisticQuery("4"));
+    //     expect(view).toEqual({
+    //         sumScore: 37,
+    //         avgScores: 3.08,
+    //         gamesCount:	12,
+    //         winsCount:	6,
+    //         lossesCount: 3,
+    //         drawsCount:	3});
+    //
+    //     view = await getAllStatisticHandler.execute(
+    //         new GetAllStatisticQuery("6"));
+    //     expect(view).toEqual({
+    //         sumScore: 21,
+    //         avgScores: 3,
+    //         gamesCount:	7,
+    //         winsCount:	2,
+    //         lossesCount: 3,
+    //         drawsCount:	2});
+    // });
     });
-
- });
+})
